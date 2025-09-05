@@ -1,8 +1,10 @@
-﻿using TaxAPI.Core.Entities;
+﻿using RegistroNF.Core.Contracts.Service;
+using RegistroNF.Core.Entities;
+using TaxAPI.Core.Entities;
 
 namespace TaxAPI.Services
 {
-    public class NotaFiscalService
+    public class NotaFiscalService : INotaFiscalService
     {
         public NotaFiscalService()
         {
@@ -17,6 +19,31 @@ namespace TaxAPI.Services
         public void CadastroEmpresa(Empresa empresa)
         {
 
+        }
+
+        public void CadastrarNota(NotaFiscal NF)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool EhValorTotalCorreto(NotaFiscal NF)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool EhDataComNumeroValido(NotaFiscal NF)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool EhExistente(int numero)
+        {
+            throw new NotImplementedException();
+        }
+
+        public NotaFiscal BuscarPorNumero(int numero)
+        {
+            throw new NotImplementedException();
         }
     }
 }

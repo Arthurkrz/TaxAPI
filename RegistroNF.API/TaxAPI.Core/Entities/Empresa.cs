@@ -1,10 +1,15 @@
 ﻿namespace RegistroNF.Core.Entities
 {
-    public class Empresa
+    public class Empresa : Entity
     {
-        public string CNPJ { get; set; } = default!;
+        public int CNPJ { get; set; } = default!;
+
         public string RazaoSocial { get; set; } = default!;
+
         public string NomeFantasia { get; set; } = default!;
-        public Endereco Endereco { get; set; } = default!;
+
+        public Endereco? Endereco { get; set; } = default!;
+
+        public Contato? Contato { get; set; } = default!;
     }
 }
