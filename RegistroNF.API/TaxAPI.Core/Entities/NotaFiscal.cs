@@ -10,8 +10,6 @@ namespace TaxAPI.Core.Entities
 
         public DateTime DataEmissao { get; set; }
 
-        public string? NaturezaOperacao { get; set; }
-
         public double ValorBrutoProdutos { get; set; }
 
         public double ValorICMS { get; set; }

@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Contracts\Repository\" />
-    <Folder Include="Validators\" />
+    <Folder Include="Contracts\Factory\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
   </ItemGroup>
 
 </Project>
