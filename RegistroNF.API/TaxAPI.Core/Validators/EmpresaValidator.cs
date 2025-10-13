@@ -21,7 +21,9 @@ namespace RegistroNF.Core.Validators
                 .Length(2, 100)
                 .WithMessage("O nome do responsável deve ter entre 2 e 100 caracteres.");
 
-            this.RuleFor(e => e.EmailResponsavel).NotNull().WithMessage("O email do responsável deve ser informado.")
+            this.RuleFor(e => e.EmailResponsavel)
+                .NotNull()
+                .WithMessage("O email do responsável deve ser informado.")
                 .NotEmpty()
                 .WithMessage("O email do responsável não pode ser vazio.")
                 .EmailAddress()

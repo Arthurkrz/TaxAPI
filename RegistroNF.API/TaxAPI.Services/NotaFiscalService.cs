@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
+using RegistroNF.Core.Common;
 using RegistroNF.Core.Contracts.Repository;
 using RegistroNF.Core.Contracts.Service;
-using RegistroNF.Core.Entities;
+using RegistroNF.Core.Enum;
 using TaxAPI.Core.Entities;
 
 namespace TaxAPI.Services
@@ -11,14 +12,13 @@ namespace TaxAPI.Services
         private readonly IValidator<NotaFiscal> _validatorNotaFiscal;
         private readonly INotaFiscalRepository _notaFiscalRepository;
 
-        private readonly IValidator<Empresa> _validatorEmpresa;
         private readonly IEmpresaService _empresaService;
 
-        public NotaFiscalService(IValidator<NotaFiscal> validatorNF, IValidator<Empresa> validatorEmpresa,
-                                 IEmpresaService empresaService, INotaFiscalRepository nfRepository)
+        public NotaFiscalService(IValidator<NotaFiscal> validatorNF, 
+                                 IEmpresaService empresaService, 
+                                 INotaFiscalRepository nfRepository)
         {
             _validatorNotaFiscal = validatorNF;
-            _validatorEmpresa = validatorEmpresa;
             _empresaService = empresaService;
             _notaFiscalRepository = nfRepository;
         }
@@ -28,48 +28,38 @@ namespace TaxAPI.Services
             var validationResult = _validatorNotaFiscal.Validate(NF);
 
             if (!validationResult.IsValid)
-                throw new ArgumentException(string.Join(
-                    ", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+                throw new CustomException(string.Join(
+                    ", ", validationResult.Errors.Select(e => e.ErrorMessage)),
+                    ErrorType.BussinessRuleViolation);
 
             if (!EhDataComNumeroValido(NF))
-                throw new ArgumentException("Já existe uma nota fiscal mais " +
-                                            "recente cujo número é superior.");
+                throw new CustomException(ErrorMessages.NFNUMERODATAINVALIDO,
+                                          ErrorType.BussinessRuleViolation);
 
             _empresaService.CadastroEmpresa(NF.Empresa);
             _notaFiscalRepository.Add(NF);
         }
 
-        private bool EhDataComNumeroValido(NotaFiscal NF)
+        private bool EhDataComNumeroValido(NotaFiscal newNF)
         {
-            var notasFiscais = _notaFiscalRepository.GetSerieNF(NF.Serie);
+            var notasFiscais = _notaFiscalRepository.GetSerieNF(newNF.Serie);
 
-            if (notasFiscais.Count == 0) return true;
+            if (notasFiscais is null || !notasFiscais.Any()) return true;
 
-            if (notasFiscais.Any(nf => nf.Numero == NF.Numero))
+            if (notasFiscais.Any(nf => nf.Numero == newNF.Numero))
                 return false;
 
-            else if (notasFiscais.First().DataEmissao < NF.DataEmissao && 
-                notasFiscais.First().Numero < NF.Numero)
-                return true;
-
-            else if (notasFiscais.Last().DataEmissao > NF.DataEmissao &&
-                notasFiscais.Last().Numero > NF.Numero)
+            if (notasFiscais.FirstOrDefault(
+                x => x.Numero < newNF.Numero && 
+                x.DataEmissao > newNF.DataEmissao) is not null) 
                 return false;
 
-            for (int i = 0; i < notasFiscais.Count - 1; i++)
-            {
-                if (notasFiscais[i].DataEmissao < NF.DataEmissao &&
-                    notasFiscais[i + 1].DataEmissao > NF.DataEmissao)
-                {
-                    if (notasFiscais[i].Numero < NF.Numero &&
-                        notasFiscais[i + 1].Numero > NF.Numero)
-                        return true;
+            if (notasFiscais.FirstOrDefault(
+                x => x.Numero > newNF.Numero && 
+                x.DataEmissao < newNF.DataEmissao) is not null) 
+                return false;
 
-                    else return false;
-                }
-            }
-
-            return false;
+            return true;
         }
     }
 }

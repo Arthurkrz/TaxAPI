@@ -1,15 +1,26 @@
 ﻿using FluentValidation;
+using RegistroNF.Core.Contracts.Repository;
 using TaxAPI.Core.Entities;
 
 namespace RegistroNF.Core.Validators
 {
     public class NotaFiscalValidator : AbstractValidator<NotaFiscal>
     {
-        public NotaFiscalValidator()
+        private readonly INotaFiscalRepository _notaFiscalRepository;
+
+        public NotaFiscalValidator(INotaFiscalRepository notaFiscalRepository)
         {
+            _notaFiscalRepository = notaFiscalRepository;
+
             this.RuleFor(nf => nf.Numero)
                 .GreaterThan(0)
                 .WithMessage("O número da nota fiscal deve ser maior que zero.");
+
+            this.RuleFor(nf => nf.Numero)
+                .Must((nf, numero) => GetSerieNF(nf.Serie).Any(x => x.Numero == numero))
+                .WithMessage("Já existe uma nota fiscal com este número na mesma série.");
+
+            this.RuleFor(nf => nf.Numero).Les
 
             this.RuleFor(nf => nf.Serie)
                 .GreaterThan(0)
@@ -38,8 +49,9 @@ namespace RegistroNF.Core.Validators
             this.RuleFor(nf => nf.Empresa)
                 .NotNull()
                 .WithMessage("A empresa emissora da nota fiscal deve ser informada.");
-
-            
         }
+
+        private List<NotaFiscal> GetSerieNF(int serie) =>
+            _notaFiscalRepository.GetSerieNF(serie);
     }
 }
