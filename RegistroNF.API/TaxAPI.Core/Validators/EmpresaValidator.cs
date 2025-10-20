@@ -8,26 +8,25 @@ namespace RegistroNF.Core.Validators
         public EmpresaValidator()
         {
             this.RuleFor(e => e.CNPJ)
-                .NotNull()
-                .WithMessage("O CNPJ da empresa deve ser informado.")
                 .Length(14)
-                .WithMessage("O CNPJ deve conter 14 dígitos.");
+                .WithMessage("O CNPJ deve conter 14 dígitos")
+                .When(e => !string.IsNullOrWhiteSpace(e.CNPJ))
+                .NotEmpty()
+                .WithMessage("O CNPJ da empresa deve ser informado");
 
             this.RuleFor(e => e.NomeResponsavel)
-                .NotNull()
-                .WithMessage("O nome do responsável deve ser informado.")
-                .NotEmpty()
-                .WithMessage("O nome do responsável não pode ser vazio.")
                 .Length(2, 100)
-                .WithMessage("O nome do responsável deve ter entre 2 e 100 caracteres.");
+                .WithMessage("O nome do responsável deve ter entre 2 e 100 caracteres")
+                .When(e => !string.IsNullOrWhiteSpace(e.NomeResponsavel))
+                .NotEmpty()
+                .WithMessage("O nome do responsável deve ser informado");
 
             this.RuleFor(e => e.EmailResponsavel)
-                .NotNull()
-                .WithMessage("O email do responsável deve ser informado.")
-                .NotEmpty()
-                .WithMessage("O email do responsável não pode ser vazio.")
                 .EmailAddress()
-                .WithMessage("O email do responsável deve ser um endereço de email válido.");
+                .WithMessage("O email do responsável deve ser um endereço de email válido")
+                .When(e => !string.IsNullOrWhiteSpace(e.EmailResponsavel))
+                .NotEmpty()
+                .WithMessage("O email do responsável deve ser informado");
         }
     }
 }

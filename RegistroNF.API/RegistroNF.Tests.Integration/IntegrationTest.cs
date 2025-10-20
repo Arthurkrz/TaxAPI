@@ -1,9 +1,9 @@
 namespace RegistroNF.Tests.Integration
 {
-    public class UnitTest1
+    public class IntegrationTest
     {
         [Fact]
-        public void Test1()
+        public void IntegrationTest1()
         {
 
         }

@@ -3,7 +3,6 @@ using RegistroNF.Core.Common;
 using RegistroNF.Core.Contracts.Repository;
 using RegistroNF.Core.Contracts.Service;
 using RegistroNF.Core.Entities;
-using RegistroNF.Core.Enum;
 
 namespace RegistroNF.Services
 {
@@ -23,12 +22,10 @@ namespace RegistroNF.Services
             var validationResult = _validatorEmpresa.Validate(empresa);
 
             if (!validationResult.IsValid)
-                throw new CustomException(string.Join(
-                    ", ", validationResult.Errors.Select(e => e.ErrorMessage)), 
-                    ErrorType.BussinessRuleViolation);
+                throw new BusinessRuleException(string.Join(
+                    ", ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
-            if (_empresaRepository.GetByCNPJ(empresa.CNPJ) is null)
-                _empresaRepository.Cadastrar(empresa);
+            _empresaRepository.Cadastrar(empresa);
         }
     }
 }

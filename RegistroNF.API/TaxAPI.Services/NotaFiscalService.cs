@@ -2,7 +2,6 @@
 using RegistroNF.Core.Common;
 using RegistroNF.Core.Contracts.Repository;
 using RegistroNF.Core.Contracts.Service;
-using RegistroNF.Core.Enum;
 using TaxAPI.Core.Entities;
 
 namespace TaxAPI.Services
@@ -10,33 +9,39 @@ namespace TaxAPI.Services
     public class NotaFiscalService : INotaFiscalService
     {
         private readonly IValidator<NotaFiscal> _validatorNotaFiscal;
-        private readonly INotaFiscalRepository _notaFiscalRepository;
-
         private readonly IEmpresaService _empresaService;
+        private readonly INotaFiscalRepository _notaFiscalRepository;
+        private readonly IEmpresaRepository _empresaRepository;
 
         public NotaFiscalService(IValidator<NotaFiscal> validatorNF, 
                                  IEmpresaService empresaService, 
-                                 INotaFiscalRepository nfRepository)
+                                 INotaFiscalRepository nfRepository, 
+                                 IEmpresaRepository empresaRepository)
         {
             _validatorNotaFiscal = validatorNF;
             _empresaService = empresaService;
             _notaFiscalRepository = nfRepository;
+            _empresaRepository = empresaRepository;
         }
 
         public void EmitirNota(NotaFiscal NF)
         {
+            if (_notaFiscalRepository.GetSerieNF(NF.Serie)
+                .Any(x => x.Numero == NF.Numero))
+                throw new BusinessRuleException(ErrorMessages.NFNUMEROEXISTENTE);
+
             var validationResult = _validatorNotaFiscal.Validate(NF);
 
             if (!validationResult.IsValid)
-                throw new CustomException(string.Join(
-                    ", ", validationResult.Errors.Select(e => e.ErrorMessage)),
-                    ErrorType.BussinessRuleViolation);
+                throw new BusinessRuleException(string.Join(
+                    ", ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
             if (!EhDataComNumeroValido(NF))
-                throw new CustomException(ErrorMessages.NFNUMERODATAINVALIDO,
-                                          ErrorType.BussinessRuleViolation);
+                throw new BusinessRuleException(ErrorMessages.NFNUMERODATAINVALIDO);
 
-            _empresaService.CadastroEmpresa(NF.Empresa);
+            if (!_empresaRepository.EhExistente(NF.Empresa.CNPJ))
+                _empresaService.CadastroEmpresa(NF.Empresa);
+
             _notaFiscalRepository.Add(NF);
         }
 
@@ -44,10 +49,7 @@ namespace TaxAPI.Services
         {
             var notasFiscais = _notaFiscalRepository.GetSerieNF(newNF.Serie);
 
-            if (notasFiscais is null || !notasFiscais.Any()) return true;
-
-            if (notasFiscais.Any(nf => nf.Numero == newNF.Numero))
-                return false;
+            if (!notasFiscais.Any()) return true;
 
             if (notasFiscais.FirstOrDefault(
                 x => x.Numero < newNF.Numero && 

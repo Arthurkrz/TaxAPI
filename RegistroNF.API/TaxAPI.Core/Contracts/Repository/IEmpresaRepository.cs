@@ -6,6 +6,6 @@ namespace RegistroNF.Core.Contracts.Repository
     {
         void Cadastrar(Empresa empresa);
 
-        Empresa GetByCNPJ(string cnpj);
+        bool EhExistente(string cnpj);
     }
 }
