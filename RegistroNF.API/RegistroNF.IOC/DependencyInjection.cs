@@ -11,16 +11,18 @@ namespace RegistroNF.IOC
 {
     public static class DependencyInjection
     {
-        public static void InjectServices(this IServiceCollection services)
+        public static IServiceCollection InjectServices(this IServiceCollection services)
         {
             services.AddScoped<INotaFiscalService, NotaFiscalService>();
             services.AddScoped<IEmpresaService, EmpresaService>();
+            return services;
         }
 
-        public static void InjectValidators(this IServiceCollection services)
+        public static IServiceCollection InjectValidators(this IServiceCollection services)
         {
             services.AddScoped<IValidator<Empresa>, EmpresaValidator>();
             services.AddScoped<IValidator<NotaFiscal>, NotaFiscalValidator>();
+            return services;
         }
     }
 }
