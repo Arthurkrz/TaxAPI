@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using TaxAPI.Core.Entities;
 
 namespace RegistroNF.Core.Validators
 {

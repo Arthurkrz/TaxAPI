@@ -1,4 +1,4 @@
-﻿namespace TaxAPI.Core.Enum
+﻿namespace RegistroNF.Core.Enum
 {
     public enum UF
     {

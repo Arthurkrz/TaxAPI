@@ -1,18 +1,17 @@
-﻿using RegistroNF.Core.Contracts.Repository;
-using TaxAPI.Core.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using RegistroNF.Core.Contracts.Repository;
+using RegistroNF.Core.Entities;
 
 namespace RegistroNF.Architecture.Repositories
 {
-    public class NotaFiscalRepository : INotaFiscalRepository
+    public class NotaFiscalRepository : BaseRepository<NotaFiscal>, INotaFiscalRepository
     {
-        public void Add(NotaFiscal NF)
-        {
-            throw new NotImplementedException();
-        }
+        public NotaFiscalRepository(Context context) : base(context) { }
 
-        public List<NotaFiscal> GetSerieNF(int serie)
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<NotaFiscal> GetSerieNF(int serie) =>
+            this.Get().AsNoTracking()
+                      .Include(x => x.Empresa)
+                      .ThenInclude(e => e.Endereco)
+                      .Where(x => x.Serie.Equals(serie)).ToList();
     }
 }

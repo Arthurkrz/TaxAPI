@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RegistroNF.Architecture\RegistroNF.Architecture.csproj" />
     <ProjectReference Include="..\TaxAPI.Core\RegistroNF.Core.csproj" />
     <ProjectReference Include="..\TaxAPI.Services\RegistroNF.Services.csproj" />
   </ItemGroup>

@@ -1,6 +1,4 @@
-﻿using RegistroNF.Core.Entities;
-
-namespace TaxAPI.Core.Entities
+﻿namespace RegistroNF.Core.Entities
 {
     public class NotaFiscal : Entity
     {

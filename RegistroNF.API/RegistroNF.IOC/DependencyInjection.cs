@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using RegistroNF.Architecture.Repositories;
+using RegistroNF.Core.Contracts.Repository;
 using RegistroNF.Core.Contracts.Service;
 using RegistroNF.Core.Entities;
 using RegistroNF.Core.Validators;
@@ -15,6 +17,13 @@ namespace RegistroNF.IOC
         {
             services.AddScoped<INotaFiscalService, NotaFiscalService>();
             services.AddScoped<IEmpresaService, EmpresaService>();
+            return services;
+        }
+
+        public static IServiceCollection InjectRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<INotaFiscalRepository, NotaFiscalRepository>();
+            services.AddScoped<IEmpresaRepository, EmpresaRepository>();
             return services;
         }
 

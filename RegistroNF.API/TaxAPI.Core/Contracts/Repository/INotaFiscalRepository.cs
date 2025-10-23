@@ -1,11 +1,10 @@
-﻿using TaxAPI.Core.Entities;
+﻿using RegistroNF.Architecture.Repositories;
+using RegistroNF.Core.Entities;
 
 namespace RegistroNF.Core.Contracts.Repository
 {
-    public interface INotaFiscalRepository
+    public interface INotaFiscalRepository : IBaseRepository<NotaFiscal>
     {
-        List<NotaFiscal> GetSerieNF(int serie);
-
-        void Add(NotaFiscal NF);
+        IEnumerable<NotaFiscal> GetSerieNF(int serie);
     }
 }

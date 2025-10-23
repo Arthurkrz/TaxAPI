@@ -1,4 +1,4 @@
-﻿using TaxAPI.Core.Entities;
+﻿using RegistroNF.Core.Entities;
 
 namespace RegistroNF.Core.Contracts.Service
 {

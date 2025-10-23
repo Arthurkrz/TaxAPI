@@ -1,4 +1,4 @@
-﻿using TaxAPI.Core.Enum;
+﻿using RegistroNF.Core.Enum;
 
 namespace RegistroNF.Core.Entities
 {

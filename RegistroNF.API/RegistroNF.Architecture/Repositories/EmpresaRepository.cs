@@ -3,16 +3,11 @@ using RegistroNF.Core.Entities;
 
 namespace RegistroNF.Architecture.Repositories
 {
-    public class EmpresaRepository : IEmpresaRepository
+    public class EmpresaRepository : BaseRepository<Empresa>, IEmpresaRepository
     {
-        public void Cadastrar(Empresa empresa)
-        {
-            throw new NotImplementedException();
-        }
+        public EmpresaRepository(Context context) : base(context) { }
 
-        public bool EhExistente(string cnpj)
-        {
-            throw new NotImplementedException();
-        }
+        public bool EhExistente(string cnpj) =>
+            this.Get().Any(e => e.CNPJ == cnpj);
     }
 }

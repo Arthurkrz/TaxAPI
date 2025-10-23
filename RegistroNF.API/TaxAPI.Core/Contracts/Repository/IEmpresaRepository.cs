@@ -1,11 +1,10 @@
-﻿using RegistroNF.Core.Entities;
+﻿using RegistroNF.Architecture.Repositories;
+using RegistroNF.Core.Entities;
 
 namespace RegistroNF.Core.Contracts.Repository
 {
-    public interface IEmpresaRepository
+    public interface IEmpresaRepository : IBaseRepository<Empresa>
     {
-        void Cadastrar(Empresa empresa);
-
         bool EhExistente(string cnpj);
     }
 }

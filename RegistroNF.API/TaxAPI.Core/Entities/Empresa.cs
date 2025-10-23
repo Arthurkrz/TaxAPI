@@ -1,6 +1,4 @@
-﻿using TaxAPI.Core.Entities;
-
-namespace RegistroNF.Core.Entities
+﻿namespace RegistroNF.Core.Entities
 {
     public class Empresa : Entity
     {
