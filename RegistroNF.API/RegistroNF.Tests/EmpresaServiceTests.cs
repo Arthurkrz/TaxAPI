@@ -5,7 +5,6 @@ using RegistroNF.Core.Contracts.Repository;
 using RegistroNF.Core.Entities;
 using RegistroNF.Core.Validators;
 using RegistroNF.Services;
-using System.Linq;
 
 namespace RegistroNF.Tests
 {

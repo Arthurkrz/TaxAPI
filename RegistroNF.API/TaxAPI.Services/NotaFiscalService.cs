@@ -26,10 +26,6 @@ namespace TaxAPI.Services
 
         public void EmitirNota(NotaFiscal NF)
         {
-            if (_notaFiscalRepository.GetSerieNF(NF.Serie)
-                .Any(x => x.Numero == NF.Numero))
-                throw new BusinessRuleException(ErrorMessages.NFNUMEROEXISTENTE);
-
             var validationResult = _validatorNotaFiscal.Validate(NF);
 
             if (!validationResult.IsValid)
@@ -39,9 +35,7 @@ namespace TaxAPI.Services
             if (!EhDataComNumeroValido(NF))
                 throw new BusinessRuleException(ErrorMessages.NFNUMERODATAINVALIDO);
 
-            if (!_empresaRepository.EhExistente(NF.Empresa.CNPJ))
-                _empresaService.CadastroEmpresa(NF.Empresa);
-
+            _empresaService.CadastroEmpresa(NF.Empresa);
             _notaFiscalRepository.Add(NF);
         }
 
@@ -50,6 +44,9 @@ namespace TaxAPI.Services
             var notasFiscais = _notaFiscalRepository.GetSerieNF(newNF.Serie);
 
             if (!notasFiscais.Any()) return true;
+
+            if (notasFiscais.Any(x => x.Numero == newNF.Numero))
+                    throw new BusinessRuleException(ErrorMessages.NFNUMEROEXISTENTE);
 
             if (notasFiscais.FirstOrDefault(
                 x => x.Numero < newNF.Numero && 

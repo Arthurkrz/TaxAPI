@@ -25,7 +25,8 @@ namespace RegistroNF.Services
                 throw new BusinessRuleException(string.Join(
                     ", ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
-            _empresaRepository.Cadastrar(empresa);
+            if (!_empresaRepository.EhExistente(empresa.CNPJ))
+                    _empresaRepository.Cadastrar(empresa);
         }
     }
 }

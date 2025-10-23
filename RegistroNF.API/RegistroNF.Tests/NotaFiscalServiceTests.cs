@@ -95,7 +95,7 @@ namespace RegistroNF.Tests
             _sut.EmitirNota(nf);
 
             // Assert
-            _empresaServiceMock.Verify(x => x.CadastroEmpresa(empresa), Times.Never);
+            _empresaServiceMock.Verify(x => x.CadastroEmpresa(empresa), Times.Once);
             _nfRepositoryMock.Verify(x => x.Add(nf), Times.Once);
         }
 
@@ -160,6 +160,9 @@ namespace RegistroNF.Tests
                 ValorTotalNota = 20,
                 Empresa = empresa
             };
+
+            _nfValidatorMock.Setup(x => x.Validate(nf)).Returns(
+                new FluentValidation.Results.ValidationResult());
 
             _nfRepositoryMock.Setup(x => x.GetSerieNF(
                 It.IsAny<int>())).Returns(new List<NotaFiscal>
