@@ -17,5 +17,7 @@ namespace TaxAPI.Core.Entities
         public double ValorTotalNota { get; set; }
 
         public Empresa Empresa { get; set; } = default!;
+
+        public Guid EmpresaId { get; set; }
     }
 }

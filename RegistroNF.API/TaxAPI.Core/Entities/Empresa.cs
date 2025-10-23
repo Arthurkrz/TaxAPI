@@ -1,4 +1,6 @@
-﻿namespace RegistroNF.Core.Entities
+﻿using TaxAPI.Core.Entities;
+
+namespace RegistroNF.Core.Entities
 {
     public class Empresa : Entity
     {
@@ -13,5 +15,9 @@
         public string EmailResponsavel { get; set;} = default!;
 
         public Endereco? Endereco { get; set; } = default!;
+
+        public Guid? EnderecoId { get; set; }
+
+        public IEnumerable<NotaFiscal> NotasFiscais { get; set;} = new List<NotaFiscal>();
     }
 }
