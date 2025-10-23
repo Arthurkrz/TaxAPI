@@ -1,19 +1,21 @@
 ﻿using RegistroNF.Core.Entities;
-using TaxAPI.Core.DTOs;
 
 namespace TaxAPI.Core.Entities
 {
-    public class NotaFiscal
+    public class NotaFiscal : Entity
     {
-        public DTOIde Ide { get; set; } = default!;
-        public Empresa Empresa { get; set; } = default!;
-        public DTOTotal Total { get; set; } = default!;
+        public int Numero { get; set; }
 
-        public NotaFiscal(DTOIde ide, Empresa empresa, DTOTotal total)
-        {
-            Ide = ide;
-            Empresa = empresa;
-            Total = total;
-        }
+        public int Serie { get; set; }
+
+        public DateTime DataEmissao { get; set; }
+
+        public double ValorBrutoProdutos { get; set; }
+
+        public double ValorICMS { get; set; }
+
+        public double ValorTotalNota { get; set; }
+
+        public Empresa Empresa { get; set; } = default!;
     }
 }

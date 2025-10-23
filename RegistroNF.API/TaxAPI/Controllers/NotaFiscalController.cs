@@ -17,18 +17,18 @@ public class NotaFiscalController : ControllerBase
     [HttpPost]
     public IActionResult CreateNF()
     {
-
+        throw new NotImplementedException();
     }
 
     [HttpGet]
     public IEnumerable<NotaFiscal> GetAll()
     {
-
+        throw new NotImplementedException();
     }
 
     [HttpGet]
     public NotaFiscal GetById(int id)
     {
-
+        throw new NotImplementedException();
     }
 }
