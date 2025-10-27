@@ -1,5 +1,8 @@
 ﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RegistroNF.Architecture;
 using RegistroNF.Architecture.Repositories;
 using RegistroNF.Core.Contracts.Repository;
 using RegistroNF.Core.Contracts.Service;
@@ -19,8 +22,12 @@ namespace RegistroNF.IOC
             return services;
         }
 
-        public static IServiceCollection InjectRepositories(this IServiceCollection services)
+        public static IServiceCollection InjectRepositories(this IServiceCollection services, IConfiguration config)
         {
+            services.AddDbContext<Context>(options =>
+                options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+
+
             services.AddScoped<INotaFiscalRepository, NotaFiscalRepository>();
             services.AddScoped<IEmpresaRepository, EmpresaRepository>();
             return services;
