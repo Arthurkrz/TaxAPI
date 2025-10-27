@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RegistroNF.Core.Entities;
-using TaxAPI.Core.Entities;
 
 namespace RegistroNF.Architecture
 {

@@ -6,7 +6,6 @@ using RegistroNF.Core.Contracts.Service;
 using RegistroNF.Core.Entities;
 using RegistroNF.Core.Validators;
 using RegistroNF.Services;
-using TaxAPI.Core.Entities;
 using TaxAPI.Services;
 
 namespace RegistroNF.IOC

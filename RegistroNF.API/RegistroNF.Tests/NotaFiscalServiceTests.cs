@@ -5,7 +5,6 @@ using RegistroNF.Core.Contracts.Repository;
 using RegistroNF.Core.Contracts.Service;
 using RegistroNF.Core.Entities;
 using RegistroNF.Core.Validators;
-using TaxAPI.Core.Entities;
 using TaxAPI.Services;
 
 namespace RegistroNF.Tests
@@ -96,7 +95,7 @@ namespace RegistroNF.Tests
 
             // Assert
             _empresaServiceMock.Verify(x => x.CadastroEmpresa(empresa), Times.Once);
-            _nfRepositoryMock.Verify(x => x.Add(nf), Times.Once);
+            _nfRepositoryMock.Verify(x => x.Create(nf), Times.Once);
         }
 
         [Fact]
@@ -136,7 +135,7 @@ namespace RegistroNF.Tests
 
             // Assert
             _empresaServiceMock.Verify(x => x.CadastroEmpresa(empresa), Times.Once);
-            _nfRepositoryMock.Verify(x => x.Add(nf), Times.Once);
+            _nfRepositoryMock.Verify(x => x.Create(nf), Times.Once);
         }
 
         [Fact]

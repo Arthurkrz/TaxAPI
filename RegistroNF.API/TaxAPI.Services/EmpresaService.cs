@@ -26,7 +26,7 @@ namespace RegistroNF.Services
                     ", ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
             if (!_empresaRepository.EhExistente(empresa.CNPJ))
-                    _empresaRepository.Cadastrar(empresa);
+                    _empresaRepository.Create(empresa);
         }
     }
 }

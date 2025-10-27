@@ -4,13 +4,13 @@ using RegistroNF.IOC;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSwaggerGen();
-builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddControllers();
 
-builder.Services.InjectServices()
-                .InjectRepositories()
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.InjectRepositories()
+                .InjectServices()
                 .InjectValidators();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

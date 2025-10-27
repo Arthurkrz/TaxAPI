@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using RegistroNF.Core.Entities;
 
 namespace RegistroNF.Core.Validators
 {

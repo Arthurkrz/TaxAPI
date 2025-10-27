@@ -2,7 +2,7 @@
 using RegistroNF.Core.Common;
 using RegistroNF.Core.Contracts.Repository;
 using RegistroNF.Core.Contracts.Service;
-using TaxAPI.Core.Entities;
+using RegistroNF.Core.Entities;
 
 namespace TaxAPI.Services
 {
@@ -36,7 +36,7 @@ namespace TaxAPI.Services
                 throw new BusinessRuleException(ErrorMessages.NFNUMERODATAINVALIDO);
 
             _empresaService.CadastroEmpresa(NF.Empresa);
-            _notaFiscalRepository.Add(NF);
+            _notaFiscalRepository.Create(NF);
         }
 
         private bool EhDataComNumeroValido(NotaFiscal newNF)

@@ -39,7 +39,7 @@ namespace RegistroNF.Tests
             _sut.CadastroEmpresa(empresa);
 
             // Assert
-            _empresaRepositoryMock.Verify(x => x.Cadastrar(empresa), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Once);
         }
 
         [Theory]
