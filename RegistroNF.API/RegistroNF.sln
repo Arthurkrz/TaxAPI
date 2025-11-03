@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35828.75
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF", "TaxAPI\RegistroNF.csproj", "{74EAAC75-202C-41A2-82F1-44283277667F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.Web", "RegistroNF.Web\RegistroNF.Web.csproj", "{74EAAC75-202C-41A2-82F1-44283277667F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.Core", "TaxAPI.Core\RegistroNF.Core.csproj", "{7864F339-F52E-4524-AADA-305657F61071}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.Core", "RegistroNF.Core\RegistroNF.Core.csproj", "{7864F339-F52E-4524-AADA-305657F61071}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.Services", "TaxAPI.Services\RegistroNF.Services.csproj", "{D3DB7A48-89A4-4347-A1B5-A3EEFB98AEB1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.Services", "RegistroNF.Services\RegistroNF.Services.csproj", "{D3DB7A48-89A4-4347-A1B5-A3EEFB98AEB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.IOC", "RegistroNF.IOC\RegistroNF.IOC.csproj", "{9241915B-E9E3-46E4-8DCC-6AB262101ECC}"
 EndProject
