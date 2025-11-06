@@ -24,10 +24,6 @@ namespace RegistroNF.Architecture.Configurations
             builder.Property(end => end.CEP)
                    .IsRequired();
 
-            builder.Property(end => end.UF)
-                   .HasConversion<int>()
-                   .IsRequired();
-
             builder.HasOne(end => end.Empresa)
                    .WithOne(emp => emp.Endereco)
                    .HasForeignKey<Empresa>(emp => emp.EnderecoId)

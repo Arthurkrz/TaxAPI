@@ -1,21 +1,17 @@
-﻿using RegistroNF.Core.Enum;
-
-namespace RegistroNF.Core.Entities
+﻿namespace RegistroNF.Core.Entities
 {
     public class Endereco : Entity
     {
-        public string Municipio { get; set; } = default!;
+        public string? Municipio { get; set; }
 
-        public string Logradouro { get; set; } = default!;
+        public string? Logradouro { get; set; }
 
-        public int Numero { get; set; } = default!;
+        public int? Numero { get; set; }
 
-        public int CEP { get; set; } = default!;
-
-        public UF UF { get; set; }
+        public int? CEP { get; set; }
 
         public Empresa Empresa { get; set; } = new Empresa();
 
-        public Guid EmpresaId { get; set; }
+        public Guid EmpresaId { get; set; } = Guid.Empty;
     }
 }

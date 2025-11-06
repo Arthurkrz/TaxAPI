@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RegistroNF.Architecture;
 using RegistroNF.IOC;
+using RegistroNF.Web.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
