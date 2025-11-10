@@ -8,7 +8,7 @@
 
         public string EmailResponsavel { get; set; } = default!;
 
-        public string? RazaoSocial { get; set; } = default!;
+        public string RazaoSocial { get; set; } = default!;
 
         public string? NomeFantasia { get; set; } = default!;
 

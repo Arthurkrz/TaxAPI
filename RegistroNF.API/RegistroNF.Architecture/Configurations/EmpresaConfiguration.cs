@@ -15,7 +15,8 @@ namespace RegistroNF.Architecture.Configurations
                    .IsRequired();
 
             builder.Property(emp => emp.RazaoSocial)
-                   .HasMaxLength(100);
+                   .HasMaxLength(100)
+                   .IsRequired();
 
             builder.Property(emp => emp.NomeFantasia)
                    .HasMaxLength(100);
@@ -43,6 +44,9 @@ namespace RegistroNF.Architecture.Configurations
                    .IsRequired();
 
             builder.HasIndex(emp => emp.CNPJ)
+                   .IsUnique();
+
+            builder.HasIndex(emp => emp.RazaoSocial)
                    .IsUnique();
 
             builder.ToTable("Empresas");

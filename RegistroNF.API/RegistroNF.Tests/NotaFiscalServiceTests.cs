@@ -180,7 +180,7 @@ namespace RegistroNF.Tests
 
             // Act & Assert
             var ex = Assert.Throws<BusinessRuleException>(() => _sut.EmitirNota(nf));
-            Assert.Equal(ErrorMessages.NFNUMEROEXISTENTE, ex.ErrorCode);
+            Assert.Equal(ErrorMessages.NFNUMEROEXISTENTE, ex.Message);
         }
 
         [Theory]
@@ -201,8 +201,7 @@ namespace RegistroNF.Tests
 
             // Act & Assert
             var ex = Assert.Throws<BusinessRuleException>(() => _sut.EmitirNota(notaFiscal));
-            Assert.Equal(string.Join(", ", errosEsperados), ex.ErrorCode);
-
+            Assert.Equal(string.Join(", ", errosEsperados), ex.Message);
         }
 
         [Theory]
