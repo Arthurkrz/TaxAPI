@@ -19,7 +19,7 @@ namespace RegistroNF.Web.Mapper
                     CNPJ = nfDTO.CNPJ,
                     NomeResponsavel = nfDTO.NomeResponsavel,
                     EmailResponsavel = nfDTO.EmailResponsavel,
-                    RazaoSocial = nfDTO.RazaoSocial,
+                    RazaoSocial = nfDTO.RazaoSocial!,
                     NomeFantasia = nfDTO.NomeFantasia,
                     Endereco = new Endereco()
                     {

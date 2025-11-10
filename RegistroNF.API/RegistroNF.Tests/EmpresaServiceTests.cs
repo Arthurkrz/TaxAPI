@@ -57,7 +57,7 @@ namespace RegistroNF.Tests
             var ex = Assert.Throws<BusinessRuleException>(() => 
                 _sut.CadastroEmpresa(empresaInvalida));
 
-            Assert.Equal(string.Join(", ", errosEsperados), ex.ErrorCode);
+            Assert.Equal(string.Join(", ", errosEsperados), ex.Message);
         }
 
         public static IEnumerable<object[]> GetEmpresaInvalida()
