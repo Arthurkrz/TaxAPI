@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculadoraImposto.API.Arch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculadoraImposto.API.IOC", "CalculadoraImposto.API.IOC\CalculadoraImposto.API.IOC.csproj", "{8530113E-F9AE-4046-826E-874A76668A68}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculadoraImposto.API.Tests", "CalculadoraImposto.API.Tests\CalculadoraImposto.API.Tests.csproj", "{07D978BE-4FDF-4EF9-9B9C-088CD7FA4112}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8530113E-F9AE-4046-826E-874A76668A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8530113E-F9AE-4046-826E-874A76668A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8530113E-F9AE-4046-826E-874A76668A68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07D978BE-4FDF-4EF9-9B9C-088CD7FA4112}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07D978BE-4FDF-4EF9-9B9C-088CD7FA4112}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07D978BE-4FDF-4EF9-9B9C-088CD7FA4112}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07D978BE-4FDF-4EF9-9B9C-088CD7FA4112}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,7 +10,7 @@
 
         public string EmailResponsavel { get; set; } = default!;
 
-        public IEnumerable<NotaFiscal> NotasFiscais { get; set; } = new List<NotaFiscal>();
+        public ICollection<NotaFiscal> NotasFiscais { get; set; } = new List<NotaFiscal>();
 
         public IEnumerable<Imposto> Impostos { get; set; } = new List<Imposto>();
     }
