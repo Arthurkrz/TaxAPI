@@ -1,16 +1,39 @@
+using CalculadoraImposto.API.Core.Contracts.Repository;
 using CalculadoraImposto.API.Core.Contracts.Service;
+using CalculadoraImposto.API.Core.Entities;
 using CalculadoraImposto.API.Service;
 using CalculadoraImposto.API.Tests.Builders;
+using Moq;
 
 namespace CalculadoraImposto.API.Tests
 {
     public class ImpostoServiceTests
     {
+        private readonly Mock<IEmpresaService> _empresaServiceMock = new();
+        private readonly Mock<IImpostoRepository> _impostoRepositoryMock = new();
         private readonly IImpostoService _sut;
 
         public ImpostoServiceTests()
         {
-            _sut = new ImpostoService();
+            _sut = new ImpostoService(_empresaServiceMock.Object, _impostoRepositoryMock.Object);
+        }
+
+        [Fact]
+        public async Task ProcessarImposto_DeveInvocarMetodoRepositorioCriarImpostoEGetOrCreate()
+        {
+            // Arrange
+            IEnumerable<Empresa> empresas = new List<Empresa>
+            { EmpresaBuilder.Create().WithNotaFiscal(10000, 2).Build() };
+
+            // Act
+            await _sut.ProcessarImposto(empresas);
+
+            // Assert
+            _empresaServiceMock.Verify(i => i.GetOrCreate(
+                It.IsAny<Empresa>()), Times.Once);
+
+            _impostoRepositoryMock.Verify(i => i.CreateAsync(
+                It.IsAny<Imposto>()), Times.Once);
         }
 
         [Theory]

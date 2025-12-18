@@ -1,15 +1,28 @@
-﻿using CalculadoraImposto.API.Core.Contracts.Service;
+﻿using CalculadoraImposto.API.Core.Contracts.Repository;
+using CalculadoraImposto.API.Core.Contracts.Service;
 using CalculadoraImposto.API.Core.Entities;
 
 namespace CalculadoraImposto.API.Service
 {
     public class ImpostoService : IImpostoService
     {
-        public void ProcessarImposto(IEnumerable<Empresa> empresas)
+        private readonly IEmpresaService _empresaService;
+        private readonly IImpostoRepository _impostoRepository;
+
+        public ImpostoService(IEmpresaService empresaService, IImpostoRepository impostoRepository)
+        {
+            _empresaService = empresaService;
+            _impostoRepository = impostoRepository;
+        }
+
+        public async Task ProcessarImposto(IEnumerable<Empresa> empresas)
         {
             foreach (Empresa empresa in empresas)
             {
+                await _empresaService.GetOrCreate(empresa);
+
                 Imposto imposto = CalcularImposto(empresa);
+                await _impostoRepository.CreateAsync(imposto);
             }
         }
 
