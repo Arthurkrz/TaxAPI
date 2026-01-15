@@ -35,13 +35,17 @@ namespace TaxAPI.Services
             if (!EhDataComNumeroValido(NF))
                 throw new BusinessRuleException(ErrorMessages.NFNUMERODATAINVALIDO);
 
-            _empresaService.CadastroEmpresa(NF.Empresa);
+            var empresa = _empresaService.CadastroEmpresa(NF.Empresa);
+
+            NF.Empresa = empresa;
+            NF.EmpresaId = empresa.Id;
+
             _notaFiscalRepository.Create(NF);
         }
 
         private bool EhDataComNumeroValido(NotaFiscal newNF)
         {
-            var notasFiscais = _notaFiscalRepository.GetSerieNF(newNF.Serie);
+            var notasFiscais = _notaFiscalRepository.GetSerieNF(newNF.Empresa.CNPJ, newNF.Serie);
 
             if (!notasFiscais.Any()) return true;
 

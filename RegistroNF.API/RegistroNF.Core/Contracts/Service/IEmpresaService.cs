@@ -4,6 +4,8 @@ namespace RegistroNF.Core.Contracts.Service
 {
     public interface IEmpresaService
     {
-        void CadastroEmpresa(Empresa empresa);
+        Empresa CadastroEmpresa(Empresa empresa);
+
+        IEnumerable<Empresa> GetEmpresaByDateAsync(int mes, int ano);
     }
 }

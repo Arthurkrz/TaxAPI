@@ -27,7 +27,6 @@ namespace RegistroNF.IOC
             services.AddDbContext<Context>(options =>
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
 
-
             services.AddScoped<INotaFiscalRepository, NotaFiscalRepository>();
             services.AddScoped<IEmpresaRepository, EmpresaRepository>();
             return services;

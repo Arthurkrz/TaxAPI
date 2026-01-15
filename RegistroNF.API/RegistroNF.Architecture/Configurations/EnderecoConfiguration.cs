@@ -18,7 +18,7 @@ namespace RegistroNF.Architecture.Configurations
                    .HasMaxLength(100)
                    .IsRequired();
 
-            builder.Property(end => end .Numero)
+            builder.Property(end => end.Numero)
                    .IsRequired();
 
             builder.Property(end => end.CEP)
