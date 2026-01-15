@@ -45,7 +45,7 @@ namespace TaxAPI.Services
 
         private bool EhDataComNumeroValido(NotaFiscal newNF)
         {
-            var notasFiscais = _notaFiscalRepository.GetSerieNF(newNF.Serie);
+            var notasFiscais = _notaFiscalRepository.GetSerieNF(newNF.Empresa.CNPJ, newNF.Serie);
 
             if (!notasFiscais.Any()) return true;
 

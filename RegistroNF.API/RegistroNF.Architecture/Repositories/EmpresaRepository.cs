@@ -6,7 +6,6 @@ namespace RegistroNF.Architecture.Repositories
 {
     public class EmpresaRepository : BaseRepository<Empresa>, IEmpresaRepository
     {
-        
         public EmpresaRepository(Context context) : base(context) { }
 
         public bool EhExistente(string cnpj) =>
@@ -15,17 +14,13 @@ namespace RegistroNF.Architecture.Repositories
         public Empresa GetByCNPJ(string cnpj) =>
             this.Get().FirstOrDefault(e => e.CNPJ == cnpj)!;
 
-        public IEnumerable<Empresa> GetEmpresaByDateAsync(DateTime data)
-        {
-            var test = Get().Include(e => e.NotasFiscais);
-            
-            var result = test.SelectMany(e => e.NotasFiscais)
-                .Where(nf => nf.DataEmissao.Month == data.Month && nf.DataEmissao.Year == data.Year)
-                .Select(nf => nf.Empresa)
-                .Distinct()
-                .ToList();
+        public IEnumerable<Empresa> GetEmpresaByDateAsync(DateTime data) =>
+            Get().Where(n => n.NotasFiscais
+            .Any(n => n.DataEmissao.Year == data.Year
+                   && n.DataEmissao.Month == data.Month))
 
-            return result;
-        }
+            .Include(x => x.NotasFiscais
+            .Where(n => n.DataEmissao.Year == data.Year
+                     && n.DataEmissao.Month == data.Month)).ToList();
     }
 }

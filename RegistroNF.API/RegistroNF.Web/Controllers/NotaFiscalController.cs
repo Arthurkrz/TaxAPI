@@ -22,17 +22,12 @@ namespace RegistroNF.Controllers
         [HttpPost]
         public IActionResult Create(NotaFiscalDTO nfDTO)
         {
-            var nf = NotaFiscalMapper.ToEntity(nfDTO);
-            _notaFiscalService.EmitirNota(nf);
+            _notaFiscalService.EmitirNota(nfDTO.ToEntity());
             return Created();
         }
 
         [HttpGet]
-        public ActionResult<List<EmpresaDTO>> Get(int mes, int ano)
-        {
-            var empresas = _empresaService.GetEmpresaByDateAsync(mes, ano);
-
-            return Ok(new List<EmpresaDTO>());
-        }
+        public ActionResult<List<EmpresaDTO>> Get([FromQuery]int mes, [FromQuery]int ano) =>
+            Ok(_empresaService.GetEmpresaByDateAsync(mes, ano).Select(e => e.ToDTO()).ToList());
     }
 }

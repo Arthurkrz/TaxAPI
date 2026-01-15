@@ -50,7 +50,7 @@ namespace RegistroNF.Architecture.Configurations
                    .HasColumnType("datetime2")
                    .IsRequired();
 
-            builder.HasIndex(nf => new { nf.Serie, nf.Numero })
+            builder.HasIndex(nf => new { nf.Serie, nf.Numero, nf.EmpresaId })
                    .IsUnique();
 
             builder.ToTable("NotasFiscais");

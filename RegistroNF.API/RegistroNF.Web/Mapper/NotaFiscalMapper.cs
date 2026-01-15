@@ -5,7 +5,7 @@ namespace RegistroNF.Web.Mapper
 {
     public static class NotaFiscalMapper
     {
-        public static NotaFiscal ToEntity(NotaFiscalDTO nfDTO) =>
+        public static NotaFiscal ToEntity(this NotaFiscalDTO nfDTO) =>
             new NotaFiscal()
             {
                 Numero = nfDTO.Numero,

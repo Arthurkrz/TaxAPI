@@ -12,7 +12,7 @@
         public async Task ExecuteAsync()
         {
             var month = DateTime.Now.AddMonths(-1);
-            var response = await _httpClient.GetAsync($"https://localhost:7075/api/v1/NotaFiscal");
+            var response = await _httpClient.GetAsync($"https://localhost:7075/api/v1/NotaFiscal?mes=1&ano=2026");
             var json = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
         }
