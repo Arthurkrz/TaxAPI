@@ -2,12 +2,10 @@
 
 namespace CalculadoraImposto.API.Core.Contracts.Repository
 {
-    public interface IEmpresaRepository
+    public interface IEmpresaRepository : IBaseRepository<Empresa>
     {
-        Task CreateAsync(Empresa empresa);
-
         Task RegistraNFsAsync(IList<NotaFiscal> notasFiscais);
 
-        Task<Empresa> GetAsync(string cnpj);
+        Task<Empresa?> GetAsync(string cnpj);
     }
 }

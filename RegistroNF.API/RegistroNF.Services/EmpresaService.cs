@@ -17,7 +17,7 @@ namespace RegistroNF.Services
             _empresaRepository = empresaRepository;
         }
 
-        public void CadastroEmpresa(Empresa empresa)
+        public Empresa CadastroEmpresa(Empresa empresa)
         {
             var validationResult = _validatorEmpresa.Validate(empresa);
 
@@ -27,6 +27,15 @@ namespace RegistroNF.Services
 
             if (!_empresaRepository.EhExistente(empresa.CNPJ))
                     _empresaRepository.Create(empresa);
+
+            // Associação ID Endereço!
+
+            return _empresaRepository.GetByCNPJ(empresa.CNPJ);
+        }
+
+        public IEnumerable<Empresa> GetEmpresaByDateAsync(int mes, int ano)
+        {
+            return _empresaRepository.GetEmpresaByDateAsync(new DateTime(ano, mes, 1));
         }
     }
 }

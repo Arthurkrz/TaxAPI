@@ -2,8 +2,5 @@
 
 namespace CalculadoraImposto.API.Core.Contracts.Repository
 {
-    public interface IImpostoRepository
-    {
-        Task CreateAsync(Imposto imposto);
-    }
+    public interface IImpostoRepository : IBaseRepository<Imposto> { }
 }
