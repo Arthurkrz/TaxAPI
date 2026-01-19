@@ -37,8 +37,11 @@ namespace RegistroNF.Tests
         public void EmitirNota_DeveInvocarMetodoRepositorioCadastroNota_QuandoEmpresaJaExiste()
         {
             // Arrange
+            var id = Guid.NewGuid();
+
             var empresa = new Empresa()
             {
+                Id = id,
                 CNPJ = "12345678000195",
                 NomeResponsavel = "NomeResponsável",
                 EmailResponsavel = "emailresponsavel@gmail.com"
@@ -77,18 +80,16 @@ namespace RegistroNF.Tests
                 ValorBrutoProdutos = 10,
                 ValorICMS = 10,
                 ValorTotalNota = 11,
-                Empresa = empresa
+                Empresa = empresa,
+                EmpresaId = id
             };
-
-            _nfRepositoryMock.Setup(x => x.GetSerieNF(It.IsAny<int>()))
-                .Returns(notasFiscais);
 
             _nfValidatorMock.Setup(x => x.Validate(
                 It.IsAny<NotaFiscal>()))
                 .Returns(new FluentValidation.Results.ValidationResult());
 
-            _empresaRepositoryMock.Setup(x => x.EhExistente(
-                It.IsAny<string>())).Returns(true);
+            _empresaServiceMock.Setup(x => x.CadastroEmpresa(
+                It.IsAny<Empresa>())).Returns(empresa);
 
             // Act
             _sut.EmitirNota(nf);
@@ -102,8 +103,11 @@ namespace RegistroNF.Tests
         public void EmitirNota_DeveInvocarMetodosRepositorioCadastroNotaEmpresa()
         {
             // Arrange
+            var id = Guid.NewGuid();
+
             var empresa = new Empresa()
             {
+                Id = id,
                 CNPJ = "12345678000195",
                 NomeResponsavel = "NomeResponsável",
                 EmailResponsavel = "emailresponsavel@gmail.com"
@@ -117,18 +121,16 @@ namespace RegistroNF.Tests
                 ValorBrutoProdutos = 10,
                 ValorICMS = 10,
                 ValorTotalNota = 20,
-                Empresa = empresa
+                Empresa = empresa,
+                EmpresaId = id
             };
-
-            _nfRepositoryMock.Setup(x => x.GetSerieNF(It.IsAny<int>()))
-                .Returns(new List<NotaFiscal>());
 
             _nfValidatorMock.Setup(x => x.Validate(
                 It.IsAny<NotaFiscal>()))
                 .Returns(new FluentValidation.Results.ValidationResult());
 
-            _empresaRepositoryMock.Setup(x => x.EhExistente(
-                It.IsAny<string>())).Returns(false);
+            _empresaServiceMock.Setup(x => x.CadastroEmpresa(
+                It.IsAny<Empresa>())).Returns(empresa);
 
             // Act
             _sut.EmitirNota(nf);
@@ -164,7 +166,8 @@ namespace RegistroNF.Tests
                 new FluentValidation.Results.ValidationResult());
 
             _nfRepositoryMock.Setup(x => x.GetSerieNF(
-                It.IsAny<int>())).Returns(new List<NotaFiscal>
+                It.IsAny<string>(), It.IsAny<int>()))
+                .Returns(new List<NotaFiscal>
                 {
                     new NotaFiscal()
                     {
@@ -196,7 +199,8 @@ namespace RegistroNF.Tests
                 _empresaRepositoryMock.Object
             );
 
-            _nfRepositoryMock.Setup(x => x.GetSerieNF(It.IsAny<int>()))
+            _nfRepositoryMock.Setup(x => x.GetSerieNF(
+                It.IsAny<string>(), It.IsAny<int>()))
                 .Returns(new List<NotaFiscal>());
 
             // Act & Assert
@@ -212,7 +216,8 @@ namespace RegistroNF.Tests
             _nfValidatorMock.Setup(x => x.Validate(It.IsAny<NotaFiscal>()))
                 .Returns(new FluentValidation.Results.ValidationResult());
 
-            _nfRepositoryMock.Setup(x => x.GetSerieNF(It.IsAny<int>()))
+            _nfRepositoryMock.Setup(x => x.GetSerieNF(
+                It.IsAny<string>(), It.IsAny<int>()))
                 .Returns(nfsJaExistentes);
 
             // Act & Assert

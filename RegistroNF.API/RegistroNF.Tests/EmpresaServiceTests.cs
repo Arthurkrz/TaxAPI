@@ -22,7 +22,7 @@ namespace RegistroNF.Tests
         }
 
         [Fact]
-        public void CadastroEmpresa_DeveInvocarMetodoRepositorioCadastroEmpresa()
+        public void CadastroEmpresa_DeveInvocarMetodoRepositorioCadastroEmpresa_SeEmpresaNaoExiste()
         {
             // Arrange
             var empresa = new Empresa()
@@ -35,11 +35,40 @@ namespace RegistroNF.Tests
             _empresaValidatorMock.Setup(x => x.Validate(empresa))
                 .Returns(new FluentValidation.Results.ValidationResult());
 
+            _empresaRepositoryMock.Setup(x => x.EhExistente(
+                It.IsAny<string>())).Returns(false);
+
             // Act
             _sut.CadastroEmpresa(empresa);
 
             // Assert
             _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.GetByCNPJ(empresa.CNPJ), Times.Once);
+        }
+
+        [Fact]
+        public void CadastroEmpresa_NaoDeveInvocarMetodoRepositorioCadastro_SeEmpresaExiste()
+        {
+            // Arrange
+            var empresa = new Empresa()
+            {
+                CNPJ = "12345678000199",
+                NomeResponsavel = "Nome Responsável",
+                EmailResponsavel = "emailresponsavel@gmail.com"
+            };
+
+            _empresaValidatorMock.Setup(x => x.Validate(empresa))
+                .Returns(new FluentValidation.Results.ValidationResult());
+
+            _empresaRepositoryMock.Setup(x => x.EhExistente(
+                It.IsAny<string>())).Returns(true);
+
+            // Act
+            _sut.CadastroEmpresa(empresa);
+
+            // Assert
+            _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Never);
+            _empresaRepositoryMock.Verify(x => x.GetByCNPJ(empresa.CNPJ), Times.Once);
         }
 
         [Theory]
