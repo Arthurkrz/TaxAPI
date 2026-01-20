@@ -4,6 +4,6 @@ namespace RegistroNF.Core.Contracts.Service
 {
     public interface INotaFiscalService
     {
-        void EmitirNota(NotaFiscal NF);
+        Task EmitirNotaAsync(NotaFiscal NF);
     }
 }

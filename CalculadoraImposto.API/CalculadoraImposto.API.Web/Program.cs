@@ -1,8 +1,13 @@
 using CalculadoraImposto.API.ScheduledJobs;
+using CalculadoraImposto.API.IOC;
 using Hangfire;
 using Hangfire.MemoryStorage;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.InjectRepositories()
+                .InjectServices()
+                .InjectValidators();
 
 builder.Services.AddHttpClient<APIJob>();
 builder.Services.AddHangfire(config => config.UseMemoryStorage());

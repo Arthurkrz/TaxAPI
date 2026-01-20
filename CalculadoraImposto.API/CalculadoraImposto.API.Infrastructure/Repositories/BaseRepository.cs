@@ -1,5 +1,6 @@
 ﻿using CalculadoraImposto.API.Core.Contracts.Repository;
 using CalculadoraImposto.API.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CalculadoraImposto.API.Infrastructure.Repositories
 {
@@ -12,10 +13,14 @@ namespace CalculadoraImposto.API.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task CreateAsync(T entity)
+        public async Task<T> CreateAsync(T entity)
         {
             await _context.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
+
+        protected async Task<IQueryable<T>> GetAsync() =>
+            await _context.Set<T>().ToListAsync();
     }
 }

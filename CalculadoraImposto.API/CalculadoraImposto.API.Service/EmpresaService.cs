@@ -15,13 +15,10 @@ namespace CalculadoraImposto.API.Service
 
         public async Task GetOrCreate(Empresa empresa)
         {
-            var empresaDb = await _empresaRepository.GetAsync(empresa.CNPJ);
-
-            if (empresaDb is null)
+            var empresaDb = await _empresaRepository.GetAsync(empresa.CNPJ) ?? 
                 await _empresaRepository.CreateAsync(empresa);
 
-            else empresa.ID = empresaDb.ID;
-
+            empresa.ID = empresaDb.ID;
             await RegistraNotas(empresa);
         }
 

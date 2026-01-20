@@ -15,11 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CalculadoraImposto.API.IOC\CalculadoraImposto.API.IOC.csproj" />
     <ProjectReference Include="..\CalculadoraImposto.API.ScheduledJobs\CalculadoraImposto.API.ScheduledJobs.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,6 @@
 {
     public interface IBaseRepository<T> where T : class
     {
-        Task CreateAsync(T entity);
+        Task<T> CreateAsync(T entity);
     }
 }
