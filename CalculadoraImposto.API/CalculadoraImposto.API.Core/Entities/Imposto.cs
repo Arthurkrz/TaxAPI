@@ -16,6 +16,6 @@
 
         public Empresa Empresa { get; set; } = default!;
 
-        public Guid EmpresaId { get; set; }
+        public Guid ImpostoEmpresaId { get; set; }
     }
 }

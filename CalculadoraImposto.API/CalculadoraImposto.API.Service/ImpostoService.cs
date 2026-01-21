@@ -15,7 +15,7 @@ namespace CalculadoraImposto.API.Service
             _impostoRepository = impostoRepository;
         }
 
-        public async Task ProcessarImposto(IEnumerable<Empresa> empresas)
+        public async Task ProcessarImpostoAsync(IEnumerable<Empresa> empresas)
         {
             foreach (Empresa empresa in empresas)
             {
@@ -43,7 +43,7 @@ namespace CalculadoraImposto.API.Service
                 LucroPresumido = lucroPresumido,
                 AnoReferencia = dataReferencia.Year,
                 MesReferencia = dataReferencia.Month,
-                EmpresaId = empresa.ID,
+                ImpostoEmpresaId = empresa.ID,
             };
         }
 

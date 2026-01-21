@@ -10,6 +10,6 @@
 
         public double ValorTotal { get; set; }
 
-        public Guid EmpresaId { get; set; }
+        public Guid NotaFiscalEmpresaId { get; set; }
     }
 }

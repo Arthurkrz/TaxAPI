@@ -10,6 +10,9 @@ namespace CalculadoraImposto.API.Infrastructure.Configurations
         {
             builder.HasKey(e => e.ID);
 
+            builder.Property(e => e.ID)
+                   .ValueGeneratedNever();
+
             builder.Property(e => e.CNPJ)
                    .IsRequired()
                    .HasMaxLength(14);

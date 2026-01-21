@@ -9,9 +9,6 @@ namespace CalculadoraImposto.API.Infrastructure.Repositories
         public EmpresaRepository(Context context) : base(context) { }
 
         public async Task<Empresa?> GetAsync(string cnpj) =>
-            await GetAsync().Empresas.FirstOrDefaultAsync(e => e.CNPJ == cnpj);
-
-        public async Task RegistraNFsAsync(IList<NotaFiscal> notasFiscais) =>
-            await _context.NotasFiscais.AddRangeAsync(notasFiscais);
+            await this.Get().FirstOrDefaultAsync(e => e.CNPJ == cnpj);
     }
 }

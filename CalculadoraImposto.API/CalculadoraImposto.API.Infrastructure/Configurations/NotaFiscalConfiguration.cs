@@ -10,6 +10,9 @@ namespace CalculadoraImposto.API.Infrastructure.Configurations
         {
             builder.HasKey(n => n.ID);
 
+            builder.Property(e => e.ID)
+                   .ValueGeneratedNever();
+
             builder.Property(n => n.Numero)
                    .IsRequired();
 
@@ -24,8 +27,9 @@ namespace CalculadoraImposto.API.Infrastructure.Configurations
 
             builder.HasOne<Empresa>()
                    .WithMany()
-                   .HasForeignKey(n => n.EmpresaId)
-                   .IsRequired();
+                   .HasForeignKey(n => n.NotaFiscalEmpresaId)
+                   .IsRequired()
+                   .OnDelete(DeleteBehavior.NoAction);
 
             builder.Property(n => n.CreationDate)
                    .IsRequired();

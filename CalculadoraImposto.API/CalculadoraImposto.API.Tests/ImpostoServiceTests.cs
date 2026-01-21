@@ -26,7 +26,7 @@ namespace CalculadoraImposto.API.Tests
             { EmpresaBuilder.Create().WithNotaFiscal(10000, 2).Build() };
 
             // Act
-            await _sut.ProcessarImposto(empresas);
+            await _sut.ProcessarImpostoAsync(empresas);
 
             // Assert
             _empresaServiceMock.Verify(i => i.GetOrCreate(
@@ -58,7 +58,7 @@ namespace CalculadoraImposto.API.Tests
             Assert.Equal(DateTime.Now.AddMonths(1).Date, imposto.Vencimento);
             Assert.Equal(dataEmissaoNF.Year, imposto.AnoReferencia);
             Assert.Equal(dataEmissaoNF.Month, imposto.MesReferencia);
-            Assert.Equal(empresa.ID, imposto.EmpresaId);
+            Assert.Equal(empresa.ID, imposto.ImpostoEmpresaId);
         }
     }
 }

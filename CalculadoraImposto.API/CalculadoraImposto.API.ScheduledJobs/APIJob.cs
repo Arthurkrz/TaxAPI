@@ -28,9 +28,7 @@ namespace CalculadoraImposto.API.ScheduledJobs
             var empresas = JsonSerializer.Deserialize<List<EmpresaDTO>>(json, options) ??
                 throw new ArgumentNullException("Lista nula recebida.");
 
-            var test = empresas.Select(e => e.ToEntity());
-
-            await _impostoService.ProcessarImposto(
+            await _impostoService.ProcessarImpostoAsync(
                 empresas.Select(dto => dto.ToEntity()));
         }
     }
