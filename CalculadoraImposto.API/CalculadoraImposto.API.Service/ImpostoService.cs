@@ -43,7 +43,7 @@ namespace CalculadoraImposto.API.Service
                 LucroPresumido = lucroPresumido,
                 AnoReferencia = dataReferencia.Year,
                 MesReferencia = dataReferencia.Month,
-                ImpostoEmpresaId = empresa.ID,
+                EmpresaId = empresa.ID,
             };
         }
 

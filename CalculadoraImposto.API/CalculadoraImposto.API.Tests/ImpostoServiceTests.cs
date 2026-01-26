@@ -58,7 +58,7 @@ namespace CalculadoraImposto.API.Tests
             Assert.Equal(DateTime.Now.AddMonths(1).Date, imposto.Vencimento);
             Assert.Equal(dataEmissaoNF.Year, imposto.AnoReferencia);
             Assert.Equal(dataEmissaoNF.Month, imposto.MesReferencia);
-            Assert.Equal(empresa.ID, imposto.ImpostoEmpresaId);
+            Assert.Equal(empresa.ID, imposto.EmpresaId);
         }
     }
 }

@@ -4,6 +4,7 @@ using CalculadoraImposto.API.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CalculadoraImposto.API.Infrastructure.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20260121182253_AlterIDGeneration2")]
+    partial class AlterIDGeneration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +28,6 @@ namespace CalculadoraImposto.API.Infrastructure.Migrations
             modelBuilder.Entity("CalculadoraImposto.API.Core.Entities.Empresa", b =>
                 {
                     b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CNPJ")
@@ -57,13 +59,12 @@ namespace CalculadoraImposto.API.Infrastructure.Migrations
                     b.HasIndex("RazaoSocial")
                         .IsUnique();
 
-                    b.ToTable("Empresas", (string)null);
+                    b.ToTable("Empresas");
                 });
 
             modelBuilder.Entity("CalculadoraImposto.API.Core.Entities.Imposto", b =>
                 {
                     b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("Aliquota")
@@ -75,7 +76,10 @@ namespace CalculadoraImposto.API.Infrastructure.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("EmpresaId")
+                    b.Property<Guid>("EmpresaID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ImpostoEmpresaId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("LucroPresumido")
@@ -92,15 +96,16 @@ namespace CalculadoraImposto.API.Infrastructure.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("EmpresaId");
+                    b.HasIndex("EmpresaID");
 
-                    b.ToTable("Impostos", (string)null);
+                    b.HasIndex("ImpostoEmpresaId");
+
+                    b.ToTable("Impostos");
                 });
 
             modelBuilder.Entity("CalculadoraImposto.API.Core.Entities.NotaFiscal", b =>
                 {
                     b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreationDate")
@@ -109,7 +114,10 @@ namespace CalculadoraImposto.API.Infrastructure.Migrations
                     b.Property<DateTime>("DataEmissao")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("EmpresaId")
+                    b.Property<Guid?>("EmpresaID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("NotaFiscalEmpresaId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Numero")
@@ -123,16 +131,24 @@ namespace CalculadoraImposto.API.Infrastructure.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("EmpresaId");
+                    b.HasIndex("EmpresaID");
 
-                    b.ToTable("NotasFiscais", (string)null);
+                    b.HasIndex("NotaFiscalEmpresaId");
+
+                    b.ToTable("NotasFiscais");
                 });
 
             modelBuilder.Entity("CalculadoraImposto.API.Core.Entities.Imposto", b =>
                 {
                     b.HasOne("CalculadoraImposto.API.Core.Entities.Empresa", "Empresa")
                         .WithMany("Impostos")
-                        .HasForeignKey("EmpresaId")
+                        .HasForeignKey("EmpresaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CalculadoraImposto.API.Core.Entities.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("ImpostoEmpresaId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -141,13 +157,15 @@ namespace CalculadoraImposto.API.Infrastructure.Migrations
 
             modelBuilder.Entity("CalculadoraImposto.API.Core.Entities.NotaFiscal", b =>
                 {
-                    b.HasOne("CalculadoraImposto.API.Core.Entities.Empresa", "Empresa")
+                    b.HasOne("CalculadoraImposto.API.Core.Entities.Empresa", null)
                         .WithMany("NotasFiscais")
-                        .HasForeignKey("EmpresaId")
+                        .HasForeignKey("EmpresaID");
+
+                    b.HasOne("CalculadoraImposto.API.Core.Entities.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("NotaFiscalEmpresaId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Empresa");
                 });
 
             modelBuilder.Entity("CalculadoraImposto.API.Core.Entities.Empresa", b =>

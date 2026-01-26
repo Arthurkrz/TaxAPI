@@ -12,6 +12,6 @@
 
         public ICollection<NotaFiscal> NotasFiscais { get; set; } = [];
 
-        public IEnumerable<Imposto> Impostos { get; set; } = [];
+        public ICollection<Imposto> Impostos { get; set; } = [];
     }
 }

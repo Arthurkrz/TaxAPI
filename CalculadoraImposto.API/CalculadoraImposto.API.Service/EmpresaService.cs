@@ -19,29 +19,19 @@ namespace CalculadoraImposto.API.Service
         {
             var empresaDb = await _empresaRepository.GetAsync(empresa.CNPJ);
 
-            if (empresaDb is null)
+            if (empresaDb is not null)
             {
+                empresa.ID = empresaDb.ID;
+
                 foreach (var nota in empresa.NotasFiscais)
-                    nota.NotaFiscalEmpresaId = empresa.ID;
+                    nota.EmpresaId = empresaDb.ID;
 
-                empresaDb = await _empresaRepository.CreateAsync(empresa);
+                await _notaFiscalRepository.RegistraNFsAsync(empresa.NotasFiscais.ToList());
+
+                return;
             }
 
-            empresa.ID = empresaDb.ID;
-            await RegistraNotasAsync(empresa);
-        }
-
-        private async Task RegistraNotasAsync(Empresa empresa)
-        {
-            var notas = new List<NotaFiscal>();
-
-            foreach (var nota in empresa.NotasFiscais)
-            {
-                nota.NotaFiscalEmpresaId = empresa.ID;
-                notas.Add(nota);
-            }
-
-            await _notaFiscalRepository.RegistraNFsAsync(notas);
+            await _empresaRepository.CreateAsync(empresa);
         }
     }
 }

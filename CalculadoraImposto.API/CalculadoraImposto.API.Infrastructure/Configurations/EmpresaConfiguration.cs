@@ -10,9 +10,6 @@ namespace CalculadoraImposto.API.Infrastructure.Configurations
         {
             builder.HasKey(e => e.ID);
 
-            builder.Property(e => e.ID)
-                   .ValueGeneratedNever();
-
             builder.Property(e => e.CNPJ)
                    .IsRequired()
                    .HasMaxLength(14);
@@ -35,6 +32,8 @@ namespace CalculadoraImposto.API.Infrastructure.Configurations
 
             builder.HasIndex(e => e.RazaoSocial)
                    .IsUnique();
+
+            builder.ToTable("Empresas");
         }
     }
 }
