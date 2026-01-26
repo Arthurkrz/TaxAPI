@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CalculadoraImposto.API.Core\CalculadoraImposto.API.Core.csproj" />
     <ProjectReference Include="..\CalculadoraImposto.API.Infrastructure\CalculadoraImposto.API.Infrastructure.csproj" />
+    <ProjectReference Include="..\CalculadoraImposto.API.ScheduledJobs\CalculadoraImposto.API.ScheduledJobs.csproj" />
     <ProjectReference Include="..\CalculadoraImposto.API.Service\CalculadoraImposto.API.Service.csproj" />
   </ItemGroup>
 
