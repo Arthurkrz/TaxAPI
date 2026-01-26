@@ -32,6 +32,8 @@ namespace CalculadoraImposto.API.Infrastructure.Configurations
 
             builder.HasIndex(e => e.RazaoSocial)
                    .IsUnique();
+
+            builder.ToTable("Empresas");
         }
     }
 }

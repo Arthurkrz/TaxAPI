@@ -14,10 +14,7 @@ namespace CalculadoraImposto.API.Infrastructure
 
         public Context(DbContextOptions<Context> options) : base(options) { }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmpresaConfiguration).Assembly);
-        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ImpostoConfiguration).Assembly);
     }
 }

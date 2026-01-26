@@ -41,7 +41,7 @@ namespace RegistroNF.Architecture.Configurations
                    .IsRequired();
 
             builder.HasOne(nf => nf.Empresa)
-                   .WithMany(nf => nf.NotasFiscais)
+                   .WithMany(e => e.NotasFiscais)
                    .HasForeignKey(nf => nf.EmpresaId)
                    .OnDelete(DeleteBehavior.Cascade)
                    .IsRequired();

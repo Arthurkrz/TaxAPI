@@ -5,6 +5,6 @@ namespace RegistroNF.Core.Contracts.Repository
 {
     public interface INotaFiscalRepository : IBaseRepository<NotaFiscal>
     {
-        IEnumerable<NotaFiscal> GetSerieNF(string cnpj, int serie);
+        Task<IList<NotaFiscal>> GetSerieNFAsync(string cnpj, int serie);
     }
 }

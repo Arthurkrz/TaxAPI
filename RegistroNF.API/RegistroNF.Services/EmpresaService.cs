@@ -17,7 +17,7 @@ namespace RegistroNF.Services
             _empresaRepository = empresaRepository;
         }
 
-        public Empresa CadastroEmpresa(Empresa empresa)
+        public async Task<Empresa> CadastroEmpresaAsync(Empresa empresa)
         {
             var validationResult = _validatorEmpresa.Validate(empresa);
 
@@ -25,13 +25,13 @@ namespace RegistroNF.Services
                 throw new BusinessRuleException(string.Join(
                     ", ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
-            if (!_empresaRepository.EhExistente(empresa.CNPJ))
+            if (!await _empresaRepository.EhExistenteAsync(empresa.CNPJ))
                     _empresaRepository.Create(empresa);
 
-            return _empresaRepository.GetByCNPJ(empresa.CNPJ);
+            return await _empresaRepository.GetByCNPJAsync(empresa.CNPJ);
         }
 
-        public IEnumerable<Empresa> GetEmpresaByDateAsync(int mes, int ano) =>
-            _empresaRepository.GetEmpresaByDateAsync(new DateTime(ano, mes, 1));
+        public async Task<IEnumerable<Empresa>> GetEmpresaByDateAsync(int mes, int ano) =>
+            await _empresaRepository.GetEmpresaByDateAsync(new DateTime(ano, mes, 1));
     }
 }

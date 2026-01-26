@@ -15,7 +15,7 @@ namespace CalculadoraImposto.API.Service
             _impostoRepository = impostoRepository;
         }
 
-        public async Task ProcessarImposto(IEnumerable<Empresa> empresas)
+        public async Task ProcessarImpostoAsync(IEnumerable<Empresa> empresas)
         {
             foreach (Empresa empresa in empresas)
             {
@@ -47,7 +47,7 @@ namespace CalculadoraImposto.API.Service
             };
         }
 
-        private double CalcularAliquota(double lucro) =>
+        private static double CalcularAliquota(double lucro) =>
             lucro >= 15000 && lucro < 25000 ? 0.12 :
             lucro >= 25000 && lucro < 50000 ? 0.18 :
             lucro >= 50000 && lucro < 75000 ? 0.23 :

@@ -5,10 +5,10 @@ namespace RegistroNF.Core.Contracts.Repository
 {
     public interface IEmpresaRepository : IBaseRepository<Empresa>
     {
-        bool EhExistente(string cnpj);
+        Task<bool> EhExistenteAsync(string cnpj);
 
-        Empresa GetByCNPJ(string cnpj);
+        Task<Empresa> GetByCNPJAsync(string cnpj);
 
-        IEnumerable<Empresa> GetEmpresaByDateAsync(DateTime data);
+        Task<IEnumerable<Empresa>> GetEmpresaByDateAsync(DateTime data);
     }
 }

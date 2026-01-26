@@ -18,7 +18,6 @@ namespace RegistroNF.Architecture.Repositories
             return entity;
         }
 
-        protected IQueryable<T> Get() =>
-            _context.Set<T>().AsQueryable();
+        public IQueryable<T> Get() => _context.Set<T>();
     }
 }

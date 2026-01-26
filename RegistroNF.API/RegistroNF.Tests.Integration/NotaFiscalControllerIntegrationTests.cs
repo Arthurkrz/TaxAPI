@@ -5,7 +5,7 @@ namespace RegistroNF.Tests.Integration
         [Fact]
         public void IntegrationTest1()
         {
-
+            throw new NotImplementedException();
         }
     }
 }

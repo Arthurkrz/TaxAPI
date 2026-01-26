@@ -1,13 +1,12 @@
 ﻿using RegistroNF.Core.Entities;
 using RegistroNF.Web.DTOs;
 
-namespace RegistroNF.Web.Mapper
+namespace RegistroNF.Web.Mappers
 {
     public static class EmpresaMapper
     {
-        public static EmpresaDTO ToDTO(this Empresa empresa)
-        {
-            return new EmpresaDTO
+        public static EmpresaDTO ToDTO(this Empresa empresa) =>
+            new EmpresaDTO()
             {
                 RazaoSocial = empresa.RazaoSocial,
                 CNPJ = empresa.CNPJ,
@@ -21,6 +20,5 @@ namespace RegistroNF.Web.Mapper
                     ValorTotal = x.ValorTotalNota
                 }).ToList()
             };
-        }
     }
 }

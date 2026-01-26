@@ -7,35 +7,31 @@ namespace CalculadoraImposto.API.Service
     public class EmpresaService : IEmpresaService
     {
         private readonly IEmpresaRepository _empresaRepository;
+        private readonly INotaFiscalRepository _notaFiscalRepository;
 
-        public EmpresaService(IEmpresaRepository empresaRepository)
+        public EmpresaService(IEmpresaRepository empresaRepository, INotaFiscalRepository notaFiscalRepository)
         {
             _empresaRepository = empresaRepository;
+            _notaFiscalRepository = notaFiscalRepository;
         }
 
         public async Task GetOrCreate(Empresa empresa)
         {
             var empresaDb = await _empresaRepository.GetAsync(empresa.CNPJ);
 
-            if (empresaDb is null)
-                await _empresaRepository.CreateAsync(empresa);
-
-            else empresa.ID = empresaDb.ID;
-
-            await RegistraNotas(empresa);
-        }
-
-        private async Task RegistraNotas(Empresa empresa)
-        {
-            var notas = new List<NotaFiscal>();
-
-            foreach (var nota in empresa.NotasFiscais)
+            if (empresaDb is not null)
             {
-                nota.EmpresaId = empresa.ID;
-                notas.Add(nota);
+                empresa.ID = empresaDb.ID;
+
+                foreach (var nota in empresa.NotasFiscais)
+                    nota.EmpresaId = empresaDb.ID;
+
+                await _notaFiscalRepository.RegistraNFsAsync(empresa.NotasFiscais.ToList());
+
+                return;
             }
 
-            await _empresaRepository.RegistraNFsAsync(notas);
+            await _empresaRepository.CreateAsync(empresa);
         }
     }
 }

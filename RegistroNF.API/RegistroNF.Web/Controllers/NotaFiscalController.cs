@@ -2,9 +2,9 @@
 using RegistroNF.Core.Contracts.Service;
 using RegistroNF.Core.DTOs;
 using RegistroNF.Web.DTOs;
-using RegistroNF.Web.Mapper;
+using RegistroNF.Web.Mappers;
 
-namespace RegistroNF.Controllers
+namespace RegistroNF.Web.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
@@ -20,14 +20,19 @@ namespace RegistroNF.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(NotaFiscalDTO nfDTO)
+        public async Task<IActionResult> CreateAsync(NotaFiscalDTO nfDTO)
         {
-            _notaFiscalService.EmitirNota(nfDTO.ToEntity());
+            await _notaFiscalService.EmitirNotaAsync(nfDTO.ToEntity());
             return Created();
         }
 
         [HttpGet]
-        public ActionResult<List<EmpresaDTO>> Get([FromQuery]int mes, [FromQuery]int ano) =>
-            Ok(_empresaService.GetEmpresaByDateAsync(mes, ano).Select(e => e.ToDTO()).ToList());
+        public async Task<ActionResult<List<EmpresaDTO>>> GetAsync([FromQuery]int mes, [FromQuery]int ano)
+        {
+            var empresa = await _empresaService.GetEmpresaByDateAsync(mes, ano);
+            var dtos = empresa.Select(e => e.ToDTO()).ToList();
+
+            return Ok(dtos);
+        }
     }
 }

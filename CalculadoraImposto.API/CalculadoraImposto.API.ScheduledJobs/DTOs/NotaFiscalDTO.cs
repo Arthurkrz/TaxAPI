@@ -1,6 +1,6 @@
 ﻿namespace CalculadoraImposto.API.ScheduledJobs.DTOs
 {
-    internal record NotaFiscalDTO
+    public record NotaFiscalDTO
     {
         public int Numero { get; set; }
 

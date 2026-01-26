@@ -22,13 +22,16 @@ namespace CalculadoraImposto.API.Infrastructure.Configurations
             builder.Property(n => n.ValorTotal)
                    .IsRequired();
 
-            builder.HasOne<Empresa>()
-                   .WithMany()
+            builder.HasOne(nf => nf.Empresa)
+                   .WithMany(e => e.NotasFiscais)
                    .HasForeignKey(n => n.EmpresaId)
-                   .IsRequired();
+                   .IsRequired()
+                   .OnDelete(DeleteBehavior.NoAction);
 
             builder.Property(n => n.CreationDate)
                    .IsRequired();
+
+            builder.ToTable("NotasFiscais");
         }
     }
 }

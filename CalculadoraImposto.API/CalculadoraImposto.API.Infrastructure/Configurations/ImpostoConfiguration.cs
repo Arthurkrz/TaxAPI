@@ -28,13 +28,16 @@ namespace CalculadoraImposto.API.Infrastructure.Configurations
             builder.Property(i => i.MesReferencia)
                    .IsRequired();
 
-            builder.HasOne<Empresa>()
-                   .WithMany()
-                   .HasForeignKey(i => i.EmpresaId)
-                   .IsRequired();
+            builder.HasOne(i => i.Empresa)
+                   .WithMany(e => e.Impostos)
+                   .HasForeignKey(e => e.EmpresaId)
+                   .IsRequired()
+                   .OnDelete(DeleteBehavior.NoAction);
 
             builder.Property(i => i.CreationDate)
                    .IsRequired();
+
+            builder.ToTable("Impostos");
         }
     }
 }

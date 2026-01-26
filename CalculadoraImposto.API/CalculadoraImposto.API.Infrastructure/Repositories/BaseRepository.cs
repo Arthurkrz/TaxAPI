@@ -12,10 +12,13 @@ namespace CalculadoraImposto.API.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task CreateAsync(T entity)
+        public async Task<T> CreateAsync(T entity)
         {
             await _context.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
+
+        public IQueryable<T> Get() => _context.Set<T>();
     }
 }

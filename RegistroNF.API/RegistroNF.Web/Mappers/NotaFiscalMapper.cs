@@ -1,7 +1,7 @@
 ﻿using RegistroNF.Core.DTOs;
 using RegistroNF.Core.Entities;
 
-namespace RegistroNF.Web.Mapper
+namespace RegistroNF.Web.Mappers
 {
     public static class NotaFiscalMapper
     {

@@ -11,20 +11,17 @@ namespace TaxAPI.Services
         private readonly IValidator<NotaFiscal> _validatorNotaFiscal;
         private readonly IEmpresaService _empresaService;
         private readonly INotaFiscalRepository _notaFiscalRepository;
-        private readonly IEmpresaRepository _empresaRepository;
 
         public NotaFiscalService(IValidator<NotaFiscal> validatorNF, 
                                  IEmpresaService empresaService, 
-                                 INotaFiscalRepository nfRepository, 
-                                 IEmpresaRepository empresaRepository)
+                                 INotaFiscalRepository nfRepository)
         {
             _validatorNotaFiscal = validatorNF;
             _empresaService = empresaService;
             _notaFiscalRepository = nfRepository;
-            _empresaRepository = empresaRepository;
         }
 
-        public void EmitirNota(NotaFiscal NF)
+        public async Task EmitirNotaAsync(NotaFiscal NF)
         {
             var validationResult = _validatorNotaFiscal.Validate(NF);
 
@@ -32,10 +29,10 @@ namespace TaxAPI.Services
                 throw new BusinessRuleException(string.Join(
                     ", ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
-            if (!EhDataComNumeroValido(NF))
+            if (!await EhDataComNumeroValidoAsync(NF))
                 throw new BusinessRuleException(ErrorMessages.NFNUMERODATAINVALIDO);
 
-            var empresa = _empresaService.CadastroEmpresa(NF.Empresa);
+            var empresa = await _empresaService.CadastroEmpresaAsync(NF.Empresa);
 
             NF.Empresa = empresa;
             NF.EmpresaId = empresa.Id;
@@ -43,9 +40,9 @@ namespace TaxAPI.Services
             _notaFiscalRepository.Create(NF);
         }
 
-        private bool EhDataComNumeroValido(NotaFiscal newNF)
+        private async Task<bool> EhDataComNumeroValidoAsync(NotaFiscal newNF)
         {
-            var notasFiscais = _notaFiscalRepository.GetSerieNF(newNF.Empresa.CNPJ, newNF.Serie);
+            var notasFiscais = await _notaFiscalRepository.GetSerieNFAsync(newNF.Empresa.CNPJ, newNF.Serie);
 
             if (!notasFiscais.Any()) return true;
 

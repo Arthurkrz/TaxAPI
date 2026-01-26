@@ -15,30 +15,30 @@ namespace RegistroNF.Tests
         private readonly Mock<IValidator<NotaFiscal>> _nfValidatorMock;
         private readonly Mock<IEmpresaService> _empresaServiceMock;
         private readonly Mock<INotaFiscalRepository> _nfRepositoryMock;
-        private readonly Mock<IEmpresaRepository> _empresaRepositoryMock;
 
         public NotaFiscalServiceTests()
         {
             _nfValidatorMock = new Mock<IValidator<NotaFiscal>>();
             _empresaServiceMock = new Mock<IEmpresaService>();
             _nfRepositoryMock = new Mock<INotaFiscalRepository>();
-            _empresaRepositoryMock = new Mock<IEmpresaRepository>();
 
             _sut = new NotaFiscalService
             (
                 _nfValidatorMock.Object,
                 _empresaServiceMock.Object,
-                _nfRepositoryMock.Object,
-                _empresaRepositoryMock.Object
+                _nfRepositoryMock.Object
             );
         }
 
         [Fact]
-        public void EmitirNota_DeveInvocarMetodoRepositorioCadastroNota_QuandoEmpresaJaExiste()
+        public async Task EmitirNota_DeveInvocarMetodoRepositorioCadastroNota_QuandoEmpresaJaExisteAsync()
         {
             // Arrange
+            var id = Guid.NewGuid();
+
             var empresa = new Empresa()
             {
+                Id = id,
                 CNPJ = "12345678000195",
                 NomeResponsavel = "NomeResponsável",
                 EmailResponsavel = "emailresponsavel@gmail.com"
@@ -77,33 +77,34 @@ namespace RegistroNF.Tests
                 ValorBrutoProdutos = 10,
                 ValorICMS = 10,
                 ValorTotalNota = 11,
-                Empresa = empresa
+                Empresa = empresa,
+                EmpresaId = id
             };
-
-            _nfRepositoryMock.Setup(x => x.GetSerieNF(It.IsAny<int>()))
-                .Returns(notasFiscais);
 
             _nfValidatorMock.Setup(x => x.Validate(
                 It.IsAny<NotaFiscal>()))
                 .Returns(new FluentValidation.Results.ValidationResult());
 
-            _empresaRepositoryMock.Setup(x => x.EhExistente(
-                It.IsAny<string>())).Returns(true);
+            _empresaServiceMock.Setup(x => x.CadastroEmpresaAsync(
+                It.IsAny<Empresa>())).ReturnsAsync(empresa);
 
             // Act
-            _sut.EmitirNota(nf);
+            await _sut.EmitirNotaAsync(nf);
 
             // Assert
-            _empresaServiceMock.Verify(x => x.CadastroEmpresa(empresa), Times.Once);
+            _empresaServiceMock.Verify(x => x.CadastroEmpresaAsync(empresa), Times.Once);
             _nfRepositoryMock.Verify(x => x.Create(nf), Times.Once);
         }
 
         [Fact]
-        public void EmitirNota_DeveInvocarMetodosRepositorioCadastroNotaEmpresa()
+        public async Task EmitirNota_DeveInvocarMetodosRepositorioCadastroNotaEmpresaAsync()
         {
             // Arrange
+            var id = Guid.NewGuid();
+
             var empresa = new Empresa()
             {
+                Id = id,
                 CNPJ = "12345678000195",
                 NomeResponsavel = "NomeResponsável",
                 EmailResponsavel = "emailresponsavel@gmail.com"
@@ -117,29 +118,27 @@ namespace RegistroNF.Tests
                 ValorBrutoProdutos = 10,
                 ValorICMS = 10,
                 ValorTotalNota = 20,
-                Empresa = empresa
+                Empresa = empresa,
+                EmpresaId = id
             };
-
-            _nfRepositoryMock.Setup(x => x.GetSerieNF(It.IsAny<int>()))
-                .Returns(new List<NotaFiscal>());
 
             _nfValidatorMock.Setup(x => x.Validate(
                 It.IsAny<NotaFiscal>()))
                 .Returns(new FluentValidation.Results.ValidationResult());
 
-            _empresaRepositoryMock.Setup(x => x.EhExistente(
-                It.IsAny<string>())).Returns(false);
+            _empresaServiceMock.Setup(x => x.CadastroEmpresaAsync(
+                It.IsAny<Empresa>())).ReturnsAsync(empresa);
 
             // Act
-            _sut.EmitirNota(nf);
+            await _sut.EmitirNotaAsync(nf);
 
             // Assert
-            _empresaServiceMock.Verify(x => x.CadastroEmpresa(empresa), Times.Once);
+            _empresaServiceMock.Verify(x => x.CadastroEmpresaAsync(empresa), Times.Once);
             _nfRepositoryMock.Verify(x => x.Create(nf), Times.Once);
         }
 
         [Fact]
-        public void EmitirNota_DeveLancarExcecao_QuandoNotaDeMesmoNumeroJaExiste()
+        public async Task EmitirNota_DeveLancarExcecao_QuandoNotaDeMesmoNumeroJaExiste()
         {
             // Arrange
             var empresa = new Empresa()
@@ -163,8 +162,9 @@ namespace RegistroNF.Tests
             _nfValidatorMock.Setup(x => x.Validate(nf)).Returns(
                 new FluentValidation.Results.ValidationResult());
 
-            _nfRepositoryMock.Setup(x => x.GetSerieNF(
-                It.IsAny<int>())).Returns(new List<NotaFiscal>
+            _nfRepositoryMock.Setup(x => x.GetSerieNFAsync(
+                It.IsAny<string>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<NotaFiscal>
                 {
                     new NotaFiscal()
                     {
@@ -179,44 +179,45 @@ namespace RegistroNF.Tests
                 });
 
             // Act & Assert
-            var ex = Assert.Throws<BusinessRuleException>(() => _sut.EmitirNota(nf));
+            var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(nf));
             Assert.Equal(ErrorMessages.NFNUMEROEXISTENTE, ex.Message);
         }
 
         [Theory]
         [MemberData(nameof(GetNotaInvalidaComErro))]
-        public void EmitirNota_DeveLancarExcecaoComErros_QuandoNotaInvalida(NotaFiscal notaFiscal, List<string> errosEsperados)
+        public async Task EmitirNota_DeveLancarExcecaoComErros_QuandoNotaInvalida(NotaFiscal notaFiscal, List<string> errosEsperados)
         {
             // Arrange
             _sut = new NotaFiscalService
             (
                 new NotaFiscalValidator(),
                 _empresaServiceMock.Object,
-                _nfRepositoryMock.Object,
-                _empresaRepositoryMock.Object
+                _nfRepositoryMock.Object
             );
 
-            _nfRepositoryMock.Setup(x => x.GetSerieNF(It.IsAny<int>()))
-                .Returns(new List<NotaFiscal>());
+            _nfRepositoryMock.Setup(x => x.GetSerieNFAsync(
+                It.IsAny<string>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<NotaFiscal>());
 
             // Act & Assert
-            var ex = Assert.Throws<BusinessRuleException>(() => _sut.EmitirNota(notaFiscal));
+            var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(notaFiscal));
             Assert.Equal(string.Join(", ", errosEsperados), ex.Message);
         }
 
         [Theory]
         [MemberData(nameof(GetNFOrdemInvalida))]
-        public void EmitirNota_DeveLancarExcecao_QuandoOrdemIncorreta(List<NotaFiscal> nfsJaExistentes, NotaFiscal nfNova)
+        public async Task EmitirNota_DeveLancarExcecao_QuandoOrdemIncorreta(List<NotaFiscal> nfsJaExistentes, NotaFiscal nfNova)
         {
             // Arrange
             _nfValidatorMock.Setup(x => x.Validate(It.IsAny<NotaFiscal>()))
                 .Returns(new FluentValidation.Results.ValidationResult());
 
-            _nfRepositoryMock.Setup(x => x.GetSerieNF(It.IsAny<int>()))
-                .Returns(nfsJaExistentes);
+            _nfRepositoryMock.Setup(x => x.GetSerieNFAsync(
+                It.IsAny<string>(), It.IsAny<int>()))
+                .ReturnsAsync(nfsJaExistentes);
 
             // Act & Assert
-            Assert.Throws<BusinessRuleException>(() => _sut.EmitirNota(nfNova));
+            await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(nfNova));
         }
 
         public static IEnumerable<object[]> GetNFOrdemInvalida()

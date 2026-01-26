@@ -22,7 +22,7 @@ namespace RegistroNF.Tests
         }
 
         [Fact]
-        public void CadastroEmpresa_DeveInvocarMetodoRepositorioCadastroEmpresa()
+        public async Task CadastroEmpresa_DeveInvocarMetodoRepositorioCadastroEmpresa_SeEmpresaNaoExisteAsync()
         {
             // Arrange
             var empresa = new Empresa()
@@ -35,16 +35,45 @@ namespace RegistroNF.Tests
             _empresaValidatorMock.Setup(x => x.Validate(empresa))
                 .Returns(new FluentValidation.Results.ValidationResult());
 
+            _empresaRepositoryMock.Setup(x => x.EhExistenteAsync(
+                It.IsAny<string>())).ReturnsAsync(false);
+
             // Act
-            _sut.CadastroEmpresa(empresa);
+            await _sut.CadastroEmpresaAsync(empresa);
 
             // Assert
             _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.GetByCNPJAsync(empresa.CNPJ), Times.Once);
+        }
+
+        [Fact]
+        public async Task CadastroEmpresa_NaoDeveInvocarMetodoRepositorioCadastro_SeEmpresaExisteAsync()
+        {
+            // Arrange
+            var empresa = new Empresa()
+            {
+                CNPJ = "12345678000199",
+                NomeResponsavel = "Nome Responsável",
+                EmailResponsavel = "emailresponsavel@gmail.com"
+            };
+
+            _empresaValidatorMock.Setup(x => x.Validate(empresa))
+                .Returns(new FluentValidation.Results.ValidationResult());
+
+            _empresaRepositoryMock.Setup(x => x.EhExistenteAsync(
+                It.IsAny<string>())).ReturnsAsync(true);
+
+            // Act
+            await _sut.CadastroEmpresaAsync(empresa);
+
+            // Assert
+            _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Never);
+            _empresaRepositoryMock.Verify(x => x.GetByCNPJAsync(empresa.CNPJ), Times.Once);
         }
 
         [Theory]
         [MemberData(nameof(GetEmpresaInvalida))]
-        public void CadastroEmpresa_DeveLancarExcecaoComErros_QuandoEmpresaInvalida(Empresa empresaInvalida, IList<string> errosEsperados)
+        public async Task CadastroEmpresa_DeveLancarExcecaoComErros_QuandoEmpresaInvalida(Empresa empresaInvalida, IList<string> errosEsperados)
         {
             // Arrange
             _sut = new EmpresaService
@@ -54,8 +83,8 @@ namespace RegistroNF.Tests
             );
 
             // Act & Assert
-            var ex = Assert.Throws<BusinessRuleException>(() => 
-                _sut.CadastroEmpresa(empresaInvalida));
+            var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => 
+                _sut.CadastroEmpresaAsync(empresaInvalida));
 
             Assert.Equal(string.Join(", ", errosEsperados), ex.Message);
         }

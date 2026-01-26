@@ -26,7 +26,7 @@ namespace CalculadoraImposto.API.Tests
             { EmpresaBuilder.Create().WithNotaFiscal(10000, 2).Build() };
 
             // Act
-            await _sut.ProcessarImposto(empresas);
+            await _sut.ProcessarImpostoAsync(empresas);
 
             // Assert
             _empresaServiceMock.Verify(i => i.GetOrCreate(

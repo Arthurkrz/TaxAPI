@@ -4,7 +4,7 @@ namespace CalculadoraImposto.API.Core.Contracts.Service
 {
     public interface IImpostoService
     {
-        Task ProcessarImposto(IEnumerable<Empresa> empresas);
+        Task ProcessarImpostoAsync(IEnumerable<Empresa> empresas);
 
         Imposto CalcularImposto(Empresa empresa);
     }
