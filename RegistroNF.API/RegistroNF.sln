@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.Architecture", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.Tests", "RegistroNF.Tests\RegistroNF.Tests.csproj", "{38307AFA-4AC3-4951-BD2E-BF497D701193}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.Tests.Integration", "RegistroNF.Tests.Integration\RegistroNF.Tests.Integration.csproj", "{EFE7D46C-C117-4C49-84D8-88BAF11705A5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{38307AFA-4AC3-4951-BD2E-BF497D701193}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38307AFA-4AC3-4951-BD2E-BF497D701193}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38307AFA-4AC3-4951-BD2E-BF497D701193}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EFE7D46C-C117-4C49-84D8-88BAF11705A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EFE7D46C-C117-4C49-84D8-88BAF11705A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EFE7D46C-C117-4C49-84D8-88BAF11705A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EFE7D46C-C117-4C49-84D8-88BAF11705A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
