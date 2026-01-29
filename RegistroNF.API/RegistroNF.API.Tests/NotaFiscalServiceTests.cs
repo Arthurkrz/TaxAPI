@@ -188,7 +188,7 @@ namespace RegistroNF.API.Tests
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(nf));
-            Assert.Equal(ErrorMessages.NFNUMEROEXISTENTE, ex.Message);
+            Assert.Equal(LogMessages.NFNUMEROEXISTENTE, ex.Message);
         }
 
         [Theory]
