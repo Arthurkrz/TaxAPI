@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Logging;
 using RegistroNF.API.Core.Common;
 using RegistroNF.API.Core.Contracts.Repository;
 using RegistroNF.API.Core.Contracts.Service;
@@ -11,14 +12,17 @@ namespace RegistroNF.API.Services
         private readonly IValidator<NotaFiscal> _validatorNotaFiscal;
         private readonly IEmpresaService _empresaService;
         private readonly INotaFiscalRepository _notaFiscalRepository;
+        private readonly ILogger<NotaFiscalService> _logger;
 
         public NotaFiscalService(IValidator<NotaFiscal> validatorNF, 
                                  IEmpresaService empresaService, 
-                                 INotaFiscalRepository nfRepository)
+                                 INotaFiscalRepository nfRepository, 
+                                 ILogger<NotaFiscalService> logger)
         {
             _validatorNotaFiscal = validatorNF;
             _empresaService = empresaService;
             _notaFiscalRepository = nfRepository;
+            _logger = logger;
         }
 
         public async Task EmitirNotaAsync(NotaFiscal NF)
@@ -26,11 +30,15 @@ namespace RegistroNF.API.Services
             var validationResult = _validatorNotaFiscal.Validate(NF);
 
             if (!validationResult.IsValid)
-                throw new BusinessRuleException(string.Join(
-                    ", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            {
+                var errors = string.Join(", ", validationResult.Errors
+                    .Select(e => e.ErrorMessage));
 
-            if (!await EhDataComNumeroValidoAsync(NF))
-                throw new BusinessRuleException(ErrorMessages.NFNUMERODATAINVALIDO);
+                _logger.LogError(errors);
+                throw new BusinessRuleException(errors);
+            }            
+
+            if (!await EhDataComNumeroValidoAsync(NF)) return;
 
             var empresa = await _empresaService.CadastroEmpresaAsync(NF.Empresa);
 
@@ -38,6 +46,8 @@ namespace RegistroNF.API.Services
             NF.EmpresaId = empresa.Id;
 
             _notaFiscalRepository.Create(NF);
+
+            _logger.LogInformation(LogMessages.NFCRIADA, NF.Empresa.CNPJ);
         }
 
         private async Task<bool> EhDataComNumeroValidoAsync(NotaFiscal newNF)
@@ -47,17 +57,35 @@ namespace RegistroNF.API.Services
             if (!notasFiscais.Any()) return true;
 
             if (notasFiscais.Any(x => x.Numero == newNF.Numero))
-                    throw new BusinessRuleException(ErrorMessages.NFNUMEROEXISTENTE);
+            {
+                var error = LogMessages.NFNUMEROEXISTENTE.Replace(
+                    "{numero}", newNF.Numero.ToString());
+
+                _logger.LogError(error);
+                throw new BusinessRuleException(error);
+            }
 
             if (notasFiscais.FirstOrDefault(
                 x => x.Numero < newNF.Numero && 
-                x.DataEmissao > newNF.DataEmissao) is not null) 
-                return false;
+                x.DataEmissao > newNF.DataEmissao) is not null)
+            {
+                var error = LogMessages.NFRECENTENUMEROMENOR.Replace(
+                    "{serie}", newNF.Serie.ToString());
+
+                _logger.LogError(error);
+                throw new BusinessRuleException(error);
+            }
 
             if (notasFiscais.FirstOrDefault(
                 x => x.Numero > newNF.Numero && 
-                x.DataEmissao < newNF.DataEmissao) is not null) 
-                return false;
+                x.DataEmissao < newNF.DataEmissao) is not null)
+            {
+                var error = LogMessages.NFANTIGANUMEROMAIOR.Replace(
+                    "{serie}", newNF.Serie.ToString());
+
+                _logger.LogError(error);
+                throw new BusinessRuleException(error);
+            }
 
             return true;
         }

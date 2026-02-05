@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Moq;
 using RegistroNF.API.Core.Common;
 using RegistroNF.API.Core.Contracts.Repository;
@@ -10,15 +11,19 @@ namespace RegistroNF.API.Tests
 {
     public class EmpresaServiceTests
     {
-        private readonly Mock<IValidator<Empresa>> _empresaValidatorMock;
-        private readonly Mock<IEmpresaRepository> _empresaRepositoryMock;
+        private readonly Mock<IValidator<Empresa>> _empresaValidatorMock = new();
+        private readonly Mock<IEmpresaRepository> _empresaRepositoryMock = new();
+        private readonly Mock<ILogger<EmpresaService>> _loggerMock = new();
         private EmpresaService _sut;
 
         public EmpresaServiceTests()
         {
-            _empresaValidatorMock = new Mock<IValidator<Empresa>>();
-            _empresaRepositoryMock = new Mock<IEmpresaRepository>();
-            _sut = new EmpresaService(_empresaValidatorMock.Object, _empresaRepositoryMock.Object);
+            _sut = new EmpresaService
+            (
+                _empresaValidatorMock.Object, 
+                _empresaRepositoryMock.Object, 
+                _loggerMock.Object
+            );
         }
 
         [Fact]
@@ -44,6 +49,15 @@ namespace RegistroNF.API.Tests
             // Assert
             _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Once);
             _empresaRepositoryMock.Verify(x => x.GetByCNPJAsync(empresa.CNPJ), Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Fact]
@@ -69,24 +83,43 @@ namespace RegistroNF.API.Tests
             // Assert
             _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Never);
             _empresaRepositoryMock.Verify(x => x.GetByCNPJAsync(empresa.CNPJ), Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Theory]
         [MemberData(nameof(GetEmpresaInvalida))]
-        public async Task CadastroEmpresa_DeveLancarExcecaoComErros_QuandoEmpresaInvalida(Empresa empresaInvalida, IList<string> errosEsperados)
+        public async Task CadastroEmpresa_DeveLancarExcecaoComErros_QuandoEmpresaInvalida(Empresa empresaInvalida, string erroEsperado)
         {
             // Arrange
             _sut = new EmpresaService
             (
                 new EmpresaValidator(),
-                _empresaRepositoryMock.Object
+                _empresaRepositoryMock.Object,
+                _loggerMock.Object
             );
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => 
                 _sut.CadastroEmpresaAsync(empresaInvalida));
 
-            Assert.Equal(string.Join(", ", errosEsperados), ex.Message);
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(erroEsperado)),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
+
+            Assert.Equal(erroEsperado, ex.Message);
         }
 
         public static IEnumerable<object[]> GetEmpresaInvalida()
@@ -100,7 +133,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                new List<string> { "O CNPJ da empresa deve ser informado" }
+                LogMessages.CNPJNAOINFORMADO
             };
 
             yield return new object[]
@@ -112,7 +145,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                new List<string> { "O CNPJ deve conter 14 dígitos" }
+                LogMessages.CNPJINVALIDO
             };
 
             yield return new object[]
@@ -124,7 +157,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                new List<string> { "O nome do responsável deve ser informado" }
+                LogMessages.NOMERESPONSAVELNAOINFORMADO
             };
 
             yield return new object[]
@@ -136,7 +169,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                new List<string> { "O nome do responsável deve ter entre 2 e 100 caracteres" }
+                LogMessages.NOMERESPONSAVELINVALIDO
             };
 
             yield return new object[]
@@ -148,7 +181,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                new List<string> { "O nome do responsável deve ter entre 2 e 100 caracteres" }
+                LogMessages.NOMERESPONSAVELINVALIDO
             };
 
             yield return new object[]
@@ -160,7 +193,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = ""
                 },
 
-                new List<string> { "O email do responsável deve ser informado" }
+                LogMessages.EMAILRESPONSAVELNAOINFORMADO
             };
 
             yield return new object[]
@@ -172,7 +205,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailinvalido"
                 },
 
-                new List<string> { "O email do responsável deve ser um endereço de email válido" }
+                LogMessages.EMAILRESPONSAVELINVALIDO
             };
 
             yield return new object[]
@@ -184,13 +217,12 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = ""
                 },
 
-                new List<string> 
+                string.Join(", ", new List<string>
                 {
-                    "O CNPJ da empresa deve ser informado",
-                    "O nome do responsável deve ser informado",
-                    "O email do responsável deve ser informado"
-                },
-
+                    LogMessages.CNPJNAOINFORMADO,
+                    LogMessages.NOMERESPONSAVELNAOINFORMADO,
+                    LogMessages.EMAILRESPONSAVELNAOINFORMADO
+                })
             };
 
             yield return new object[]
@@ -202,12 +234,12 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailinvalido"
                 },
 
-                new List<string> 
+                string.Join(", ", new List<string>
                 {
-                    "O CNPJ deve conter 14 dígitos",
-                    "O nome do responsável deve ter entre 2 e 100 caracteres",
-                    "O email do responsável deve ser um endereço de email válido" 
-                }
+                    LogMessages.CNPJINVALIDO,
+                    LogMessages.NOMERESPONSAVELINVALIDO,
+                    LogMessages.EMAILRESPONSAVELINVALIDO
+                })
             };
 
             yield return new object[]
@@ -219,12 +251,12 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailinvalido"
                 },
 
-                new List<string> 
+                string.Join(", ", new List<string>
                 {
-                    "O CNPJ deve conter 14 dígitos",
-                    "O nome do responsável deve ter entre 2 e 100 caracteres",
-                    "O email do responsável deve ser um endereço de email válido" 
-                }
+                    LogMessages.CNPJINVALIDO,
+                    LogMessages.NOMERESPONSAVELINVALIDO,
+                    LogMessages.EMAILRESPONSAVELINVALIDO
+                })
             };
         }
     }

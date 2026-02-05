@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Moq;
 using RegistroNF.API.Core.Common;
 using RegistroNF.API.Core.Contracts.Repository;
@@ -12,21 +13,19 @@ namespace RegistroNF.API.Tests
     public class NotaFiscalServiceTests
     {
         private INotaFiscalService _sut;
-        private readonly Mock<IValidator<NotaFiscal>> _nfValidatorMock;
-        private readonly Mock<IEmpresaService> _empresaServiceMock;
-        private readonly Mock<INotaFiscalRepository> _nfRepositoryMock;
+        private readonly Mock<IValidator<NotaFiscal>> _nfValidatorMock = new();
+        private readonly Mock<IEmpresaService> _empresaServiceMock = new();
+        private readonly Mock<INotaFiscalRepository> _nfRepositoryMock = new();
+        private readonly Mock<ILogger<NotaFiscalService>> _loggerMock = new();
 
         public NotaFiscalServiceTests()
         {
-            _nfValidatorMock = new Mock<IValidator<NotaFiscal>>();
-            _empresaServiceMock = new Mock<IEmpresaService>();
-            _nfRepositoryMock = new Mock<INotaFiscalRepository>();
-
             _sut = new NotaFiscalService
             (
                 _nfValidatorMock.Object,
                 _empresaServiceMock.Object,
-                _nfRepositoryMock.Object
+                _nfRepositoryMock.Object,
+                _loggerMock.Object
             );
         }
 
@@ -98,6 +97,24 @@ namespace RegistroNF.API.Tests
             // Assert
             _empresaServiceMock.Verify(x => x.CadastroEmpresaAsync(empresa), Times.Once);
             _nfRepositoryMock.Verify(x => x.Create(nf), Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Never);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Fact]
@@ -143,6 +160,24 @@ namespace RegistroNF.API.Tests
             // Assert
             _empresaServiceMock.Verify(x => x.CadastroEmpresaAsync(empresa), Times.Once);
             _nfRepositoryMock.Verify(x => x.Create(nf), Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Never);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Fact]
@@ -188,19 +223,31 @@ namespace RegistroNF.API.Tests
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(nf));
-            Assert.Equal(ErrorMessages.NFNUMEROEXISTENTE, ex.Message);
+            var error = LogMessages.NFNUMEROEXISTENTE.Replace("{numero}", nf.Numero.ToString());
+
+            Assert.Equal(error, ex.Message);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(error)),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Theory]
         [MemberData(nameof(GetNotaInvalidaComErro))]
-        public async Task EmitirNota_DeveLancarExcecaoComErros_QuandoNotaInvalida(NotaFiscal notaFiscal, List<string> errosEsperados)
+        public async Task EmitirNota_DeveLancarExcecaoComErros_QuandoNotaInvalida(NotaFiscal notaFiscal, string erroEsperado)
         {
             // Arrange
             _sut = new NotaFiscalService
             (
                 new NotaFiscalValidator(),
                 _empresaServiceMock.Object,
-                _nfRepositoryMock.Object
+                _nfRepositoryMock.Object,
+                _loggerMock.Object
             );
 
             _nfRepositoryMock.Setup(x => x.GetSerieNFAsync(
@@ -209,12 +256,21 @@ namespace RegistroNF.API.Tests
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(notaFiscal));
-            Assert.Equal(string.Join(", ", errosEsperados), ex.Message);
+            Assert.Equal(erroEsperado, ex.Message);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(erroEsperado)),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Theory]
         [MemberData(nameof(GetNFOrdemInvalida))]
-        public async Task EmitirNota_DeveLancarExcecao_QuandoOrdemIncorreta(List<NotaFiscal> nfsJaExistentes, NotaFiscal nfNova)
+        public async Task EmitirNota_DeveLancarExcecao_QuandoOrdemIncorreta(List<NotaFiscal> nfsJaExistentes, NotaFiscal nfNova, string erroEsperado)
         {
             // Arrange
             _nfValidatorMock.Setup(x => x.Validate(It.IsAny<NotaFiscal>()))
@@ -225,7 +281,17 @@ namespace RegistroNF.API.Tests
                 .ReturnsAsync(nfsJaExistentes);
 
             // Act & Assert
-            await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(nfNova));
+            var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(nfNova));
+            Assert.Equal(erroEsperado, ex.Message);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(erroEsperado)),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         public static IEnumerable<object[]> GetNFOrdemInvalida()
@@ -272,7 +338,9 @@ namespace RegistroNF.API.Tests
                         NomeResponsavel = "aaa",
                         EmailResponsavel = "aaa"
                     }
-                }
+                },
+
+                LogMessages.NFRECENTENUMEROMENOR.Replace("{serie}", "1")
             };
 
             yield return new object[]
@@ -317,7 +385,9 @@ namespace RegistroNF.API.Tests
                         NomeResponsavel = "aaa",
                         EmailResponsavel = "aaa"
                     }
-                }
+                },
+
+                LogMessages.NFANTIGANUMEROMAIOR.Replace("{serie}", "1")
             };
         }
 
@@ -343,10 +413,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                new List<string>
-                {
-                    "A série da nota fiscal deve ser maior que zero"
-                }
+                LogMessages.SERIEMAIORQUEZERO
             };
 
             yield return new object[]
@@ -362,10 +429,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                new List<string>
-                {
-                    "O número da nota fiscal deve ser maior que zero"
-                }
+                LogMessages.NUMEROMAIORQUEZERO
             };
 
             yield return new object[]
@@ -381,10 +445,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                new List<string>
-                {
-                    "A data de emissão não pode ser futura"
-                }
+                LogMessages.DATAEMISSAONAOFUTURA
             };
 
             yield return new object[]
@@ -400,10 +461,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                new List<string>
-                {
-                    "O valor bruto dos produtos deve ser maior que zero"
-                }
+                LogMessages.VALORBRUTOMAIORQUEZERO
             };
 
             yield return new object[]
@@ -419,10 +477,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                new List<string>
-                {
-                    "O valor total da nota fiscal deve ser igual ao valor bruto dos produtos mais o valor do ICMS"
-                }
+                LogMessages.VALORTOTALINVALIDO
             };
 
             yield return new object[]
@@ -438,10 +493,7 @@ namespace RegistroNF.API.Tests
                     Empresa = null!
                 },
 
-                new List<string>
-                {
-                    "A empresa emissora da nota fiscal deve ser informada"
-                }
+                LogMessages.EMPRESANAOINFORMADA
             };
 
             yield return new object[]
@@ -457,15 +509,15 @@ namespace RegistroNF.API.Tests
                     Empresa = null!
                 },
 
-                new List<string>
+                string.Join(", ", new List<string>
                 {
-                    "O número da nota fiscal deve ser maior que zero",
-                    "A série da nota fiscal deve ser maior que zero",
-                    "A data de emissão não pode ser futura",
-                    "O valor bruto dos produtos deve ser maior que zero",
-                    "O valor total da nota fiscal deve ser igual ao valor bruto dos produtos mais o valor do ICMS",
-                    "A empresa emissora da nota fiscal deve ser informada"
-                }
+                    LogMessages.NUMEROMAIORQUEZERO,
+                    LogMessages.SERIEMAIORQUEZERO,
+                    LogMessages.DATAEMISSAONAOFUTURA,
+                    LogMessages.VALORBRUTOMAIORQUEZERO,
+                    LogMessages.VALORTOTALINVALIDO,
+                    LogMessages.EMPRESANAOINFORMADA
+                })
             };
         }
     }
