@@ -413,7 +413,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                "A série da nota fiscal deve ser maior que zero"
+                LogMessages.SERIEMAIORQUEZERO
             };
 
             yield return new object[]
@@ -429,7 +429,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                "O número da nota fiscal deve ser maior que zero"
+                LogMessages.NUMEROMAIORQUEZERO
             };
 
             yield return new object[]
@@ -445,7 +445,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                "A data de emissão não pode ser futura"
+                LogMessages.DATAEMISSAONAOFUTURA
             };
 
             yield return new object[]
@@ -461,7 +461,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                "O valor bruto dos produtos deve ser maior que zero"
+                LogMessages.VALORBRUTOMAIORQUEZERO
             };
 
             yield return new object[]
@@ -477,7 +477,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                "O valor total da nota fiscal deve ser igual ao valor bruto dos produtos mais o valor do ICMS"
+                LogMessages.VALORTOTALINVALIDO
             };
 
             yield return new object[]
@@ -493,7 +493,7 @@ namespace RegistroNF.API.Tests
                     Empresa = null!
                 },
 
-                "A empresa emissora da nota fiscal deve ser informada"
+                LogMessages.EMPRESANAOINFORMADA
             };
 
             yield return new object[]
@@ -509,12 +509,15 @@ namespace RegistroNF.API.Tests
                     Empresa = null!
                 },
 
-                "O número da nota fiscal deve ser maior que zero, " +
-                "A série da nota fiscal deve ser maior que zero, " +
-                "A data de emissão não pode ser futura, " +
-                "O valor bruto dos produtos deve ser maior que zero, " +
-                "O valor total da nota fiscal deve ser igual ao valor bruto dos produtos mais o valor do ICMS, " +
-                "A empresa emissora da nota fiscal deve ser informada"
+                string.Join(", ", new List<string>
+                {
+                    LogMessages.NUMEROMAIORQUEZERO,
+                    LogMessages.SERIEMAIORQUEZERO,
+                    LogMessages.DATAEMISSAONAOFUTURA,
+                    LogMessages.VALORBRUTOMAIORQUEZERO,
+                    LogMessages.VALORTOTALINVALIDO,
+                    LogMessages.EMPRESANAOINFORMADA
+                })
             };
         }
     }

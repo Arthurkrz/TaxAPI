@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using RegistroNF.API.Core.Common;
 using RegistroNF.API.Core.Entities;
 
 namespace RegistroNF.API.Core.Validators
@@ -9,24 +10,24 @@ namespace RegistroNF.API.Core.Validators
         {
             this.RuleFor(e => e.CNPJ)
                 .Length(14)
-                .WithMessage("O CNPJ deve conter 14 dígitos")
+                .WithMessage(LogMessages.CNPJINVALIDO)
                 .When(e => !string.IsNullOrWhiteSpace(e.CNPJ))
                 .NotEmpty()
-                .WithMessage("O CNPJ da empresa deve ser informado");
+                .WithMessage(LogMessages.CNPJNAOINFORMADO);
 
             this.RuleFor(e => e.NomeResponsavel)
                 .Length(2, 100)
-                .WithMessage("O nome do responsável deve ter entre 2 e 100 caracteres")
+                .WithMessage(LogMessages.NOMERESPONSAVELINVALIDO)
                 .When(e => !string.IsNullOrWhiteSpace(e.NomeResponsavel))
                 .NotEmpty()
-                .WithMessage("O nome do responsável deve ser informado");
+                .WithMessage(LogMessages.NOMERESPONSAVELNAOINFORMADO);
 
             this.RuleFor(e => e.EmailResponsavel)
                 .EmailAddress()
-                .WithMessage("O email do responsável deve ser um endereço de email válido")
+                .WithMessage(LogMessages.EMAILRESPONSAVELINVALIDO)
                 .When(e => !string.IsNullOrWhiteSpace(e.EmailResponsavel))
                 .NotEmpty()
-                .WithMessage("O email do responsável deve ser informado");
+                .WithMessage(LogMessages.EMAILRESPONSAVELNAOINFORMADO);
         }
     }
 }

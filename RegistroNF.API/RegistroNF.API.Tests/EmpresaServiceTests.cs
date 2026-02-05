@@ -6,7 +6,6 @@ using RegistroNF.API.Core.Contracts.Repository;
 using RegistroNF.API.Core.Entities;
 using RegistroNF.API.Core.Validators;
 using RegistroNF.API.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RegistroNF.API.Tests
 {
@@ -134,7 +133,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                "O CNPJ da empresa deve ser informado"
+                LogMessages.CNPJNAOINFORMADO
             };
 
             yield return new object[]
@@ -146,7 +145,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                "O CNPJ deve conter 14 dígitos"
+                LogMessages.CNPJINVALIDO
             };
 
             yield return new object[]
@@ -158,7 +157,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                "O nome do responsável deve ser informado"
+                LogMessages.NOMERESPONSAVELNAOINFORMADO
             };
 
             yield return new object[]
@@ -170,7 +169,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                "O nome do responsável deve ter entre 2 e 100 caracteres"
+                LogMessages.NOMERESPONSAVELINVALIDO
             };
 
             yield return new object[]
@@ -182,7 +181,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                "O nome do responsável deve ter entre 2 e 100 caracteres"
+                LogMessages.NOMERESPONSAVELINVALIDO
             };
 
             yield return new object[]
@@ -194,7 +193,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = ""
                 },
 
-                "O email do responsável deve ser informado"
+                LogMessages.EMAILRESPONSAVELNAOINFORMADO
             };
 
             yield return new object[]
@@ -206,7 +205,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailinvalido"
                 },
 
-                "O email do responsável deve ser um endereço de email válido"
+                LogMessages.EMAILRESPONSAVELINVALIDO
             };
 
             yield return new object[]
@@ -218,9 +217,12 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = ""
                 },
 
-                "O CNPJ da empresa deve ser informado, " +
-                "O nome do responsável deve ser informado, " +
-                "O email do responsável deve ser informado"
+                string.Join(", ", new List<string>
+                {
+                    LogMessages.CNPJNAOINFORMADO,
+                    LogMessages.NOMERESPONSAVELNAOINFORMADO,
+                    LogMessages.EMAILRESPONSAVELNAOINFORMADO
+                })
             };
 
             yield return new object[]
@@ -232,9 +234,12 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailinvalido"
                 },
 
-                "O CNPJ deve conter 14 dígitos, " +
-                "O nome do responsável deve ter entre 2 e 100 caracteres, " +
-                "O email do responsável deve ser um endereço de email válido" 
+                string.Join(", ", new List<string>
+                {
+                    LogMessages.CNPJINVALIDO,
+                    LogMessages.NOMERESPONSAVELINVALIDO,
+                    LogMessages.EMAILRESPONSAVELINVALIDO
+                })
             };
 
             yield return new object[]
@@ -246,9 +251,12 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailinvalido"
                 },
 
-                "O CNPJ deve conter 14 dígitos, " +
-                "O nome do responsável deve ter entre 2 e 100 caracteres, " +
-                "O email do responsável deve ser um endereço de email válido"
+                string.Join(", ", new List<string>
+                {
+                    LogMessages.CNPJINVALIDO,
+                    LogMessages.NOMERESPONSAVELINVALIDO,
+                    LogMessages.EMAILRESPONSAVELINVALIDO
+                })
             };
         }
     }
