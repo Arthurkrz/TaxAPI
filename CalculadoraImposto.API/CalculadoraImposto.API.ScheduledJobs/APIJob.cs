@@ -56,14 +56,16 @@ namespace CalculadoraImposto.API.ScheduledJobs
 
                 if (!validationResult.IsValid)
                 {
-                    _logger.LogError(LogMessages.EMPRESAINVALIDA,
-                        empresa.CNPJ,
-                        string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+                    _logger.LogError(string.Join(", ", validationResult.Errors
+                        .Select(e => e.ErrorMessage)));
+
                     continue;
                 }
 
                 empresas.Add(empresa.ToEntity());
             }
+
+            _logger.LogInformation(LogMessages.INICIOPROCESSAMENTO, empresas.Count);
 
             await _impostoService.ProcessarImpostoAsync(empresas);
         }

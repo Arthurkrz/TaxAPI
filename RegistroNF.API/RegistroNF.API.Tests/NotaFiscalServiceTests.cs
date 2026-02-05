@@ -106,6 +106,15 @@ namespace RegistroNF.API.Tests
                 It.IsAny<Exception>(),
                 (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
                 Times.Never);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Fact]
@@ -160,6 +169,15 @@ namespace RegistroNF.API.Tests
                 It.IsAny<Exception>(),
                 (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
                 Times.Never);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Fact]
@@ -205,14 +223,15 @@ namespace RegistroNF.API.Tests
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(nf));
-            Assert.Equal(string.Format(LogMessages.NFNUMEROEXISTENTE, nf.Numero, nf.Serie, nf.Empresa.CNPJ), ex.Message);
+            var error = LogMessages.NFNUMEROEXISTENTE.Replace("{numero}", nf.Numero.ToString());
+
+            Assert.Equal(error, ex.Message);
 
             _loggerMock.Verify(
                 x => x.Log(
                 LogLevel.Error,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(
-                    string.Format(LogMessages.NFNUMEROEXISTENTE, nf.Numero, nf.Serie, nf.Empresa.CNPJ))),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(error)),
                 It.IsAny<Exception>(),
                 (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
                 Times.Once);
@@ -237,20 +256,13 @@ namespace RegistroNF.API.Tests
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(notaFiscal));
-            Assert.Equal(string.Join(", ", errosEsperados), ex.Message);
-
-            var valorNumero = notaFiscal.Numero <= 0 ? 
-                "não informado" : notaFiscal.Numero.ToString();
-
-            var valorSerie = notaFiscal.Serie <= 0 ?
-                "não informada" : notaFiscal.Serie.ToString();
+            Assert.Equal(erroEsperado, ex.Message);
 
             _loggerMock.Verify(
                 x => x.Log(
                 LogLevel.Error,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(string.Format(
-                    LogMessages.NFINVALIDA, valorNumero, valorSerie, string.Join(", ", errosEsperados)))),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(erroEsperado)),
                 It.IsAny<Exception>(),
                 (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
                 Times.Once);
@@ -328,7 +340,7 @@ namespace RegistroNF.API.Tests
                     }
                 },
 
-                string.Format(LogMessages.NFRECENTENUMEROMENOR, 1, "12345678000195")
+                LogMessages.NFRECENTENUMEROMENOR.Replace("{serie}", "1")
             };
 
             yield return new object[]
@@ -375,7 +387,7 @@ namespace RegistroNF.API.Tests
                     }
                 },
 
-                string.Format(LogMessages.NFANTIGANUMEROMAIOR, 1, "12345678000195")
+                LogMessages.NFANTIGANUMEROMAIOR.Replace("{serie}", "1")
             };
         }
 
@@ -401,11 +413,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                new List<string>
-                {
-                    "Erros encontrados na NF de número {0} e série {1}: " +
-                      "A série da nota fiscal deve ser maior que zero"
-                }
+                "A série da nota fiscal deve ser maior que zero"
             };
 
             yield return new object[]
@@ -421,11 +429,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                new List<string>
-                {
-                    "Erros encontrados na NF de número não informado e série 1: " +
-                      "O número da nota fiscal deve ser maior que zero"
-                }
+                "O número da nota fiscal deve ser maior que zero"
             };
 
             yield return new object[]
@@ -441,11 +445,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                new List<string>
-                {
-                    "Erros encontrados na NF de número 1 e série 1: " +
-                      "A data de emissão não pode ser futura"
-                }
+                "A data de emissão não pode ser futura"
             };
 
             yield return new object[]
@@ -461,11 +461,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                new List<string>
-                {
-                    "Erros encontrados na NF de número 1 e série 1: " +
-                      "O valor bruto dos produtos deve ser maior que zero"
-                }
+                "O valor bruto dos produtos deve ser maior que zero"
             };
 
             yield return new object[]
@@ -481,11 +477,7 @@ namespace RegistroNF.API.Tests
                     Empresa = empresa
                 },
 
-                new List<string>
-                {
-                    "Erros encontrados na NF de número 1 e série 1: " +
-                      "O valor total da nota fiscal deve ser igual ao valor bruto dos produtos mais o valor do ICMS"
-                }
+                "O valor total da nota fiscal deve ser igual ao valor bruto dos produtos mais o valor do ICMS"
             };
 
             yield return new object[]
@@ -501,11 +493,7 @@ namespace RegistroNF.API.Tests
                     Empresa = null!
                 },
 
-                new List<string>
-                {
-                    "Erros encontrados na NF de número 1 e série 1: " + 
-                      "A empresa emissora da nota fiscal deve ser informada"
-                }
+                "A empresa emissora da nota fiscal deve ser informada"
             };
 
             yield return new object[]
@@ -521,16 +509,12 @@ namespace RegistroNF.API.Tests
                     Empresa = null!
                 },
 
-                new List<string>
-                {
-                    "Erros encontrados na NF de número não informado e série não informada: " +
-                      "O número da nota fiscal deve ser maior que zero, " +
-                      "A série da nota fiscal deve ser maior que zero, " +
-                      "A data de emissão não pode ser futura, " +
-                      "O valor bruto dos produtos deve ser maior que zero, " +
-                      "O valor total da nota fiscal deve ser igual ao valor bruto dos produtos mais o valor do ICMS, " +
-                      "A empresa emissora da nota fiscal deve ser informada"
-                }
+                "O número da nota fiscal deve ser maior que zero, " +
+                "A série da nota fiscal deve ser maior que zero, " +
+                "A data de emissão não pode ser futura, " +
+                "O valor bruto dos produtos deve ser maior que zero, " +
+                "O valor total da nota fiscal deve ser igual ao valor bruto dos produtos mais o valor do ICMS, " +
+                "A empresa emissora da nota fiscal deve ser informada"
             };
         }
     }

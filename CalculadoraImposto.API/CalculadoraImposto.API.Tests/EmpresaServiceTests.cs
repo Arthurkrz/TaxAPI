@@ -2,6 +2,8 @@
 using CalculadoraImposto.API.Core.Contracts.Service;
 using CalculadoraImposto.API.Core.Entities;
 using CalculadoraImposto.API.Service;
+using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace CalculadoraImposto.API.Tests
@@ -10,11 +12,12 @@ namespace CalculadoraImposto.API.Tests
     {
         private readonly Mock<IEmpresaRepository> _empresaRepositoryMock = new();
         private readonly Mock<INotaFiscalRepository> _nfRepositoryMock = new();
+        private readonly Mock<ILogger<EmpresaService>> _loggerMock = new();
         private readonly IEmpresaService _sut;
 
         public EmpresaServiceTests()
         {
-            _sut = new EmpresaService(_empresaRepositoryMock.Object, _nfRepositoryMock.Object);
+            _sut = new EmpresaService(_empresaRepositoryMock.Object, _nfRepositoryMock.Object, _loggerMock.Object);
         }
 
         [Fact]
@@ -41,6 +44,15 @@ namespace CalculadoraImposto.API.Tests
             // Assert
             _empresaRepositoryMock.Verify(x => x.CreateAsync(
                 It.IsAny<Empresa>()), Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Fact]
@@ -79,6 +91,15 @@ namespace CalculadoraImposto.API.Tests
             // Assert
             _nfRepositoryMock.Verify(x => x.RegistraNFsAsync(
                 It.IsAny<List<NotaFiscal>>()), Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Exactly(2));
         }
     }
 }

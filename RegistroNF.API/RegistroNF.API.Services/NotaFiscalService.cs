@@ -31,18 +31,11 @@ namespace RegistroNF.API.Services
 
             if (!validationResult.IsValid)
             {
-                var valorNumero = NF.Numero <= 0 ?
-                    "não informado" : NF.Numero.ToString();
+                var errors = string.Join(", ", validationResult.Errors
+                    .Select(e => e.ErrorMessage));
 
-                var valorSerie = NF.Serie <= 0 ?
-                    "não informada" : NF.Serie.ToString();
-
-                _logger.LogError(LogMessages.NFINVALIDA, valorNumero, valorSerie,
-                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
-
-                throw new BusinessRuleException(string.Format(
-                    LogMessages.NFINVALIDA, valorNumero, valorSerie, 
-                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage))));
+                _logger.LogError(errors);
+                throw new BusinessRuleException(errors);
             }            
 
             if (!await EhDataComNumeroValidoAsync(NF)) return;
@@ -53,6 +46,8 @@ namespace RegistroNF.API.Services
             NF.EmpresaId = empresa.Id;
 
             _notaFiscalRepository.Create(NF);
+
+            _logger.LogInformation(LogMessages.NFCRIADA, NF.Empresa.CNPJ);
         }
 
         private async Task<bool> EhDataComNumeroValidoAsync(NotaFiscal newNF)
@@ -63,36 +58,33 @@ namespace RegistroNF.API.Services
 
             if (notasFiscais.Any(x => x.Numero == newNF.Numero))
             {
-                _logger.LogError(LogMessages.NFNUMEROEXISTENTE,
-                    newNF.Numero, newNF.Serie, newNF.Empresa.CNPJ);
+                var error = LogMessages.NFNUMEROEXISTENTE.Replace(
+                    "{numero}", newNF.Numero.ToString());
 
-                throw new BusinessRuleException(string.Format(
-                    LogMessages.NFNUMEROEXISTENTE,
-                    newNF.Numero, newNF.Serie, newNF.Empresa.CNPJ));
+                _logger.LogError(error);
+                throw new BusinessRuleException(error);
             }
 
             if (notasFiscais.FirstOrDefault(
                 x => x.Numero < newNF.Numero && 
                 x.DataEmissao > newNF.DataEmissao) is not null)
             {
-                _logger.LogError(LogMessages.NFRECENTENUMEROMENOR,
-                    newNF.Serie, newNF.Empresa.CNPJ);
+                var error = LogMessages.NFRECENTENUMEROMENOR.Replace(
+                    "{serie}", newNF.Serie.ToString());
 
-                throw new BusinessRuleException(string.Format(
-                    LogMessages.NFRECENTENUMEROMENOR,
-                    newNF.Serie, newNF.Empresa.CNPJ));
+                _logger.LogError(error);
+                throw new BusinessRuleException(error);
             }
 
             if (notasFiscais.FirstOrDefault(
                 x => x.Numero > newNF.Numero && 
                 x.DataEmissao < newNF.DataEmissao) is not null)
             {
-                _logger.LogError(LogMessages.NFANTIGANUMEROMAIOR,
-                    newNF.Serie, newNF.Empresa.CNPJ);
+                var error = LogMessages.NFANTIGANUMEROMAIOR.Replace(
+                    "{serie}", newNF.Serie.ToString());
 
-                throw new BusinessRuleException(string.Format(
-                    LogMessages.NFANTIGANUMEROMAIOR,
-                    newNF.Serie, newNF.Empresa.CNPJ));
+                _logger.LogError(error);
+                throw new BusinessRuleException(error);
             }
 
             return true;

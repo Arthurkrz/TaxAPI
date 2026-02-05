@@ -3,6 +3,8 @@ using CalculadoraImposto.API.Core.Contracts.Service;
 using CalculadoraImposto.API.Core.Entities;
 using CalculadoraImposto.API.Service;
 using CalculadoraImposto.API.Tests.Builders;
+using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace CalculadoraImposto.API.Tests
@@ -11,11 +13,12 @@ namespace CalculadoraImposto.API.Tests
     {
         private readonly Mock<IEmpresaService> _empresaServiceMock = new();
         private readonly Mock<IImpostoRepository> _impostoRepositoryMock = new();
+        private readonly Mock<ILogger<ImpostoService>> _loggerMock = new();
         private readonly IImpostoService _sut;
 
         public ImpostoServiceTests()
         {
-            _sut = new ImpostoService(_empresaServiceMock.Object, _impostoRepositoryMock.Object);
+            _sut = new ImpostoService(_empresaServiceMock.Object, _impostoRepositoryMock.Object, _loggerMock.Object);
         }
 
         [Fact]
@@ -34,6 +37,15 @@ namespace CalculadoraImposto.API.Tests
 
             _impostoRepositoryMock.Verify(i => i.CreateAsync(
                 It.IsAny<Imposto>()), Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Theory]

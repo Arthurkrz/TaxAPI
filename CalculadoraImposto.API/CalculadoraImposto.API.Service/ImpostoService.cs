@@ -1,6 +1,8 @@
-﻿using CalculadoraImposto.API.Core.Contracts.Repository;
+﻿using CalculadoraImposto.API.Core.Common;
+using CalculadoraImposto.API.Core.Contracts.Repository;
 using CalculadoraImposto.API.Core.Contracts.Service;
 using CalculadoraImposto.API.Core.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace CalculadoraImposto.API.Service
 {
@@ -8,11 +10,13 @@ namespace CalculadoraImposto.API.Service
     {
         private readonly IEmpresaService _empresaService;
         private readonly IImpostoRepository _impostoRepository;
+        private readonly ILogger<ImpostoService> _logger;
 
-        public ImpostoService(IEmpresaService empresaService, IImpostoRepository impostoRepository)
+        public ImpostoService(IEmpresaService empresaService, IImpostoRepository impostoRepository, ILogger<ImpostoService> logger)
         {
             _empresaService = empresaService;
             _impostoRepository = impostoRepository;
+            _logger = logger;
         }
 
         public async Task ProcessarImpostoAsync(IEnumerable<Empresa> empresas)
@@ -23,6 +27,8 @@ namespace CalculadoraImposto.API.Service
 
                 Imposto imposto = CalcularImposto(empresa);
                 await _impostoRepository.CreateAsync(imposto);
+
+                _logger.LogInformation(LogMessages.IMPOSTOCRIADO, empresa.CNPJ);
             }
         }
 

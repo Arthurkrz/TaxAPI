@@ -26,18 +26,20 @@ namespace RegistroNF.API.Services
 
             if (!validationResult.IsValid)
             {
-                _logger.LogError(LogMessages.EMPRESAINVALIDA,
-                    empresa.CNPJ ?? "Não informado",
-                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+                string errors = string.Join(", ", validationResult.Errors
+                    .Select(e => e.ErrorMessage));
 
-                throw new BusinessRuleException(string.Format(
-                    LogMessages.EMPRESAINVALIDA,
-                    empresa.CNPJ ?? "Não informado",
-                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage))));
+                _logger.LogError(errors);
+                throw new BusinessRuleException(errors);
             }
 
             if (!await _empresaRepository.EhExistenteAsync(empresa.CNPJ))
-                    _empresaRepository.Create(empresa);
+            {
+                _empresaRepository.Create(empresa);
+                _logger.LogInformation(LogMessages.EMPRESACRIADA, empresa.CNPJ);
+            }
+
+            else _logger.LogInformation(LogMessages.EMPRESAEXISTENTE, empresa.CNPJ);
 
             return await _empresaRepository.GetByCNPJAsync(empresa.CNPJ);
         }

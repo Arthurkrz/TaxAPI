@@ -6,6 +6,7 @@ using RegistroNF.API.Core.Contracts.Repository;
 using RegistroNF.API.Core.Entities;
 using RegistroNF.API.Core.Validators;
 using RegistroNF.API.Services;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RegistroNF.API.Tests
 {
@@ -49,6 +50,15 @@ namespace RegistroNF.API.Tests
             // Assert
             _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Once);
             _empresaRepositoryMock.Verify(x => x.GetByCNPJAsync(empresa.CNPJ), Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Fact]
@@ -74,11 +84,20 @@ namespace RegistroNF.API.Tests
             // Assert
             _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Never);
             _empresaRepositoryMock.Verify(x => x.GetByCNPJAsync(empresa.CNPJ), Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [Theory]
         [MemberData(nameof(GetEmpresaInvalida))]
-        public async Task CadastroEmpresa_DeveLancarExcecaoComErros_QuandoEmpresaInvalida(Empresa empresaInvalida, IList<string> errosEsperados)
+        public async Task CadastroEmpresa_DeveLancarExcecaoComErros_QuandoEmpresaInvalida(Empresa empresaInvalida, string erroEsperado)
         {
             // Arrange
             _sut = new EmpresaService
@@ -92,7 +111,16 @@ namespace RegistroNF.API.Tests
             var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => 
                 _sut.CadastroEmpresaAsync(empresaInvalida));
 
-            Assert.Equal(string.Join(", ", errosEsperados), ex.Message);
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(erroEsperado)),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
+
+            Assert.Equal(erroEsperado, ex.Message);
         }
 
         public static IEnumerable<object[]> GetEmpresaInvalida()
@@ -106,7 +134,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                new List<string> { "O CNPJ da empresa deve ser informado" }
+                "O CNPJ da empresa deve ser informado"
             };
 
             yield return new object[]
@@ -118,7 +146,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                new List<string> { "O CNPJ deve conter 14 dígitos" }
+                "O CNPJ deve conter 14 dígitos"
             };
 
             yield return new object[]
@@ -130,7 +158,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                new List<string> { "O nome do responsável deve ser informado" }
+                "O nome do responsável deve ser informado"
             };
 
             yield return new object[]
@@ -142,7 +170,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                new List<string> { "O nome do responsável deve ter entre 2 e 100 caracteres" }
+                "O nome do responsável deve ter entre 2 e 100 caracteres"
             };
 
             yield return new object[]
@@ -154,7 +182,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailresponsavel@gmail.com"
                 },
 
-                new List<string> { "O nome do responsável deve ter entre 2 e 100 caracteres" }
+                "O nome do responsável deve ter entre 2 e 100 caracteres"
             };
 
             yield return new object[]
@@ -166,7 +194,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = ""
                 },
 
-                new List<string> { "O email do responsável deve ser informado" }
+                "O email do responsável deve ser informado"
             };
 
             yield return new object[]
@@ -178,7 +206,7 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailinvalido"
                 },
 
-                new List<string> { "O email do responsável deve ser um endereço de email válido" }
+                "O email do responsável deve ser um endereço de email válido"
             };
 
             yield return new object[]
@@ -190,13 +218,9 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = ""
                 },
 
-                new List<string> 
-                {
-                    "O CNPJ da empresa deve ser informado",
-                    "O nome do responsável deve ser informado",
-                    "O email do responsável deve ser informado"
-                },
-
+                "O CNPJ da empresa deve ser informado, " +
+                "O nome do responsável deve ser informado, " +
+                "O email do responsável deve ser informado"
             };
 
             yield return new object[]
@@ -208,12 +232,9 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailinvalido"
                 },
 
-                new List<string> 
-                {
-                    "O CNPJ deve conter 14 dígitos",
-                    "O nome do responsável deve ter entre 2 e 100 caracteres",
-                    "O email do responsável deve ser um endereço de email válido" 
-                }
+                "O CNPJ deve conter 14 dígitos, " +
+                "O nome do responsável deve ter entre 2 e 100 caracteres, " +
+                "O email do responsável deve ser um endereço de email válido" 
             };
 
             yield return new object[]
@@ -225,12 +246,9 @@ namespace RegistroNF.API.Tests
                     EmailResponsavel = "emailinvalido"
                 },
 
-                new List<string> 
-                {
-                    "O CNPJ deve conter 14 dígitos",
-                    "O nome do responsável deve ter entre 2 e 100 caracteres",
-                    "O email do responsável deve ser um endereço de email válido" 
-                }
+                "O CNPJ deve conter 14 dígitos, " +
+                "O nome do responsável deve ter entre 2 e 100 caracteres, " +
+                "O email do responsável deve ser um endereço de email válido"
             };
         }
     }
