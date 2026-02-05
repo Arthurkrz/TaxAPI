@@ -40,7 +40,10 @@ namespace CalculadoraImposto.API.ScheduledJobs
             var empresasDTO = JsonSerializer.Deserialize<List<EmpresaDTO>>(json, options);
 
             if (empresasDTO == null || empresasDTO.Count == 0)
+            {
                 _logger.LogWarning(LogMessages.NENHUMAEMPRESARECEBIDA);
+                return;
+            }
 
             _logger.LogInformation(LogMessages.EMPRESASRECEBIDAS, 
                 empresasDTO!.Count, empresasDTO.Sum(e => e.NotasFiscais.Count));

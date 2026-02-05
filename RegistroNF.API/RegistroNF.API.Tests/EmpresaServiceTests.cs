@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Moq;
 using RegistroNF.API.Core.Common;
 using RegistroNF.API.Core.Contracts.Repository;
@@ -10,15 +11,19 @@ namespace RegistroNF.API.Tests
 {
     public class EmpresaServiceTests
     {
-        private readonly Mock<IValidator<Empresa>> _empresaValidatorMock;
-        private readonly Mock<IEmpresaRepository> _empresaRepositoryMock;
+        private readonly Mock<IValidator<Empresa>> _empresaValidatorMock = new();
+        private readonly Mock<IEmpresaRepository> _empresaRepositoryMock = new();
+        private readonly Mock<ILogger<EmpresaService>> _loggerMock = new();
         private EmpresaService _sut;
 
         public EmpresaServiceTests()
         {
-            _empresaValidatorMock = new Mock<IValidator<Empresa>>();
-            _empresaRepositoryMock = new Mock<IEmpresaRepository>();
-            _sut = new EmpresaService(_empresaValidatorMock.Object, _empresaRepositoryMock.Object);
+            _sut = new EmpresaService
+            (
+                _empresaValidatorMock.Object, 
+                _empresaRepositoryMock.Object, 
+                _loggerMock.Object
+            );
         }
 
         [Fact]
@@ -79,7 +84,8 @@ namespace RegistroNF.API.Tests
             _sut = new EmpresaService
             (
                 new EmpresaValidator(),
-                _empresaRepositoryMock.Object
+                _empresaRepositoryMock.Object,
+                _loggerMock.Object
             );
 
             // Act & Assert

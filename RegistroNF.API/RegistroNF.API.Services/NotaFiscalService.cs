@@ -30,8 +30,20 @@ namespace RegistroNF.API.Services
             var validationResult = _validatorNotaFiscal.Validate(NF);
 
             if (!validationResult.IsValid)
-                throw new BusinessRuleException(string.Join(
-                    ", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            {
+                var valorNumero = NF.Numero <= 0 ?
+                    "não informado" : NF.Numero.ToString();
+
+                var valorSerie = NF.Serie <= 0 ?
+                    "não informada" : NF.Serie.ToString();
+
+                _logger.LogError(LogMessages.NFINVALIDA, valorNumero, valorSerie,
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+
+                throw new BusinessRuleException(string.Format(
+                    LogMessages.NFINVALIDA, valorNumero, valorSerie, 
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage))));
+            }            
 
             if (!await EhDataComNumeroValidoAsync(NF)) return;
 
@@ -54,7 +66,9 @@ namespace RegistroNF.API.Services
                 _logger.LogError(LogMessages.NFNUMEROEXISTENTE,
                     newNF.Numero, newNF.Serie, newNF.Empresa.CNPJ);
 
-                throw new BusinessRuleException($"NF de número {newNF.Numero} da série {newNF.Serie} já processada.");
+                throw new BusinessRuleException(string.Format(
+                    LogMessages.NFNUMEROEXISTENTE,
+                    newNF.Numero, newNF.Serie, newNF.Empresa.CNPJ));
             }
 
             if (notasFiscais.FirstOrDefault(
@@ -64,7 +78,9 @@ namespace RegistroNF.API.Services
                 _logger.LogError(LogMessages.NFRECENTENUMEROMENOR,
                     newNF.Serie, newNF.Empresa.CNPJ);
 
-                throw new BusinessRuleException($"Há uma nota fiscal mais antiga de maior número na série {newNF.Serie}.");
+                throw new BusinessRuleException(string.Format(
+                    LogMessages.NFRECENTENUMEROMENOR,
+                    newNF.Serie, newNF.Empresa.CNPJ));
             }
 
             if (notasFiscais.FirstOrDefault(
@@ -74,7 +90,9 @@ namespace RegistroNF.API.Services
                 _logger.LogError(LogMessages.NFANTIGANUMEROMAIOR,
                     newNF.Serie, newNF.Empresa.CNPJ);
 
-                throw new BusinessRuleException($"Há uma nota fiscal mais recente de menor número na série {newNF.Serie}.");
+                throw new BusinessRuleException(string.Format(
+                    LogMessages.NFANTIGANUMEROMAIOR,
+                    newNF.Serie, newNF.Empresa.CNPJ));
             }
 
             return true;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RegistroNF.API.Core.Common;
 using RegistroNF.API.Core.Contracts.Service;
 using RegistroNF.API.Web.DTOs;
 using RegistroNF.API.Web.Mappers;
@@ -34,7 +35,8 @@ namespace RegistroNF.API.Web.Controllers
             var dtos = empresa.Select(e => e.ToDTO()).ToList();
             var quantidadeNotas = dtos.Sum(e => e.NotasFiscais.Count);
 
-            _logger.LogInformation($"{quantidadeNotas} notas enviadas de {dtos.Count} empresas na data {mes}/{ano}.");
+            _logger.LogInformation(LogMessages.ENVIONF, 
+                quantidadeNotas, dtos.Count, mes, ano);
 
             return Ok(dtos);
         }

@@ -26,12 +26,14 @@ namespace RegistroNF.API.Services
 
             if (!validationResult.IsValid)
             {
-                _logger.LogError("Erro ao validar empresa de CNPJ {CNPJ}: {Errors}",
+                _logger.LogError(LogMessages.EMPRESAINVALIDA,
                     empresa.CNPJ ?? "Não informado",
                     string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
-                throw new BusinessRuleException(string.Join(
-                    ", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+                throw new BusinessRuleException(string.Format(
+                    LogMessages.EMPRESAINVALIDA,
+                    empresa.CNPJ ?? "Não informado",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage))));
             }
 
             if (!await _empresaRepository.EhExistenteAsync(empresa.CNPJ))
