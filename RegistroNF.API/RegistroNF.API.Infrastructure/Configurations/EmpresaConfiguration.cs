@@ -29,6 +29,9 @@ namespace RegistroNF.API.Infrastructure.Configurations
                    .HasMaxLength(50)
                    .IsRequired();
 
+            builder.Property(emp => emp.Status)
+                   .IsRequired();
+
             builder.HasOne(emp => emp.Endereco)
                    .WithOne(end => end.Empresa)
                    .HasForeignKey<Endereco>(end => end.EmpresaId)

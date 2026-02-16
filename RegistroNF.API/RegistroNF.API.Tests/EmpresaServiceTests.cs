@@ -6,6 +6,7 @@ using RegistroNF.API.Core.Contracts.Repository;
 using RegistroNF.API.Core.Entities;
 using RegistroNF.API.Core.Validators;
 using RegistroNF.API.Services;
+using RegistroNF.API.Services.Utilities;
 
 namespace RegistroNF.API.Tests
 {
@@ -47,7 +48,7 @@ namespace RegistroNF.API.Tests
             await _sut.CadastroEmpresaAsync(empresa);
 
             // Assert
-            _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.CreateAsync(empresa), Times.Once);
             _empresaRepositoryMock.Verify(x => x.GetByCNPJAsync(empresa.CNPJ), Times.Once);
 
             _loggerMock.Verify(
@@ -81,7 +82,7 @@ namespace RegistroNF.API.Tests
             await _sut.CadastroEmpresaAsync(empresa);
 
             // Assert
-            _empresaRepositoryMock.Verify(x => x.Create(empresa), Times.Never);
+            _empresaRepositoryMock.Verify(x => x.CreateAsync(empresa), Times.Never);
             _empresaRepositoryMock.Verify(x => x.GetByCNPJAsync(empresa.CNPJ), Times.Once);
 
             _loggerMock.Verify(
@@ -92,6 +93,31 @@ namespace RegistroNF.API.Tests
                 It.IsAny<Exception>(),
                 (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
                 Times.Once);
+        }
+
+        [Fact]
+        public void Test()
+        {
+            var teste = new Empresa()
+            {
+                CNPJ = "123456789",
+                NomeResponsavel = "a",
+                EmailResponsavel = "a",
+                RazaoSocial = "a",
+                NomeFantasia = "a"
+
+            };
+
+            var endereco = new Endereco()
+            {
+                Municipio = "a",
+                Logradouro = "a",
+                UF = "a",
+                Numero = 1,
+                CEP = 1
+            };
+
+            var result = RegisterStatusValidator.ValidateRegisterStatus(endereco);
         }
 
         [Theory]

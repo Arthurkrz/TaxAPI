@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.API.Infrastructu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.API.Tests", "RegistroNF.API.Tests\RegistroNF.API.Tests.csproj", "{38307AFA-4AC3-4951-BD2E-BF497D701193}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistroNF.API.ScheduledJobs", "RegistroNF.API.ScheduledJobs\RegistroNF.API.ScheduledJobs.csproj", "{6BC921F2-A035-4BA6-85C3-143F6DE3D3C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{38307AFA-4AC3-4951-BD2E-BF497D701193}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38307AFA-4AC3-4951-BD2E-BF497D701193}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38307AFA-4AC3-4951-BD2E-BF497D701193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BC921F2-A035-4BA6-85C3-143F6DE3D3C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BC921F2-A035-4BA6-85C3-143F6DE3D3C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BC921F2-A035-4BA6-85C3-143F6DE3D3C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BC921F2-A035-4BA6-85C3-143F6DE3D3C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

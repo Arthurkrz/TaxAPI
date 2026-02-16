@@ -9,6 +9,10 @@
         public const string EMPRESACRIADA = "Empresa de CNPJ {CNPJ} registrada no banco de dados.";
         public const string EMPRESAEXISTENTE = "Empresa de CNPJ {CNPJ} já existente no banco de dados.";
         public const string NFCRIADA = "Nota Fiscal da empresa de CNPJ {CNPJ} registrada no banco de dados.";
+        public const string EMPRESANAOENCONTRADA = "CNPJ informado não corresponde a nenhuma empresa cadastrada.";
+        public const string CADASTROATUALIZADO = "Cadastro de empresa atualizado para completo.";
+        public const string NOVAEMPRESAPARCIAL = "Nova empresa enviada para atualização incompleta.";
+        public const string EMPRESABLOQUEADA = "Empresa bloqueada. Atualize o cadastro para continuar.";
 
         public const string NUMEROMAIORQUEZERO = "O número da nota fiscal deve ser maior que zero";
         public const string SERIEMAIORQUEZERO = "A série da nota fiscal deve ser maior que zero";

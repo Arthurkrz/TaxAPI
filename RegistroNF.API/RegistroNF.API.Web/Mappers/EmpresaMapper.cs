@@ -1,4 +1,5 @@
 ﻿using RegistroNF.API.Core.Entities;
+using RegistroNF.API.Core.Enum;
 using RegistroNF.API.Web.DTOs;
 
 namespace RegistroNF.API.Web.Mappers
@@ -19,6 +20,24 @@ namespace RegistroNF.API.Web.Mappers
                     DataEmissao = x.DataEmissao,
                     ValorTotal = x.ValorTotalNota
                 }).ToList()
+            };
+
+        public static Empresa ToEntity(this EmpresaUpdateDTO empresaUpdateDTO) =>
+            new Empresa()
+            {
+                CNPJ = empresaUpdateDTO.CNPJ,
+                NomeResponsavel = empresaUpdateDTO.NomeResponsavel,
+                EmailResponsavel = empresaUpdateDTO.EmailResponsavel,
+                RazaoSocial = empresaUpdateDTO.RazaoSocial,
+                NomeFantasia = empresaUpdateDTO.NomeFantasia,
+                Endereco = new Endereco()
+                {
+                    Municipio = empresaUpdateDTO.Municipio,
+                    Logradouro = empresaUpdateDTO.Logradouro,
+                    Numero = empresaUpdateDTO.Numero,
+                    CEP = empresaUpdateDTO.CEP,
+                    UF = empresaUpdateDTO.UF
+                },
             };
     }
 }

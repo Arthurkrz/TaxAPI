@@ -7,5 +7,9 @@ namespace RegistroNF.API.Core.Contracts.Service
         Task<Empresa> CadastroEmpresaAsync(Empresa empresa);
 
         Task<IEnumerable<Empresa>> GetEmpresaByDateAsync(int mes, int ano);
+
+        Task<IEnumerable<Empresa>> GetEmpresasIncompletasAsync(int mes, int ano);
+
+        Task UpdateStatusCadastroAsync(Empresa empresa);
     }
 }

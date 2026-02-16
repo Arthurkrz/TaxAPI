@@ -1,4 +1,6 @@
-﻿namespace RegistroNF.API.Core.Entities
+﻿using RegistroNF.API.Core.Enum;
+
+namespace RegistroNF.API.Core.Entities
 {
     public class Empresa : Entity
     {
@@ -14,7 +16,7 @@
 
         public Endereco? Endereco { get; set; } = default!;
 
-        public Guid? EnderecoId { get; set; }
+        public Status Status { get; set; }
 
         public IEnumerable<NotaFiscal> NotasFiscais { get; set;} = new List<NotaFiscal>();
     }

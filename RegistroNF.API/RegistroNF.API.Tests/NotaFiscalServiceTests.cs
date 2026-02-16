@@ -96,7 +96,7 @@ namespace RegistroNF.API.Tests
 
             // Assert
             _empresaServiceMock.Verify(x => x.CadastroEmpresaAsync(empresa), Times.Once);
-            _nfRepositoryMock.Verify(x => x.Create(nf), Times.Once);
+            _nfRepositoryMock.Verify(x => x.CreateAsync(nf), Times.Once);
 
             _loggerMock.Verify(
                 x => x.Log(
@@ -159,7 +159,7 @@ namespace RegistroNF.API.Tests
 
             // Assert
             _empresaServiceMock.Verify(x => x.CadastroEmpresaAsync(empresa), Times.Once);
-            _nfRepositoryMock.Verify(x => x.Create(nf), Times.Once);
+            _nfRepositoryMock.Verify(x => x.CreateAsync(nf), Times.Once);
 
             _loggerMock.Verify(
                 x => x.Log(

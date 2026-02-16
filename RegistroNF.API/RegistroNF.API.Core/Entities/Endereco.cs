@@ -10,6 +10,8 @@
 
         public int? CEP { get; set; }
 
+        public string? UF { get; set; }
+
         public Empresa Empresa { get; set; } = new Empresa();
 
         public Guid EmpresaId { get; set; } = Guid.Empty;
