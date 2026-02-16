@@ -4,7 +4,7 @@ namespace RegistroNF.API.Services
 {
     public class EmailService : IEmailService
     {
-        public Task SendEmailAsync(string from, string to, string body)
+        public async Task SendEmailAsync(string from, string to, string body)
         {
             throw new NotImplementedException();
         }

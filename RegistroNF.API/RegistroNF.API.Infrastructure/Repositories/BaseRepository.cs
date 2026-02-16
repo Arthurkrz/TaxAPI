@@ -22,12 +22,9 @@ namespace RegistroNF.API.Infrastructure.Repositories
         public async Task UpdateAsync(T entity)
         {
             _context.Update(entity);
-            await SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public IQueryable<T> Get() => _context.Set<T>();
-
-        public async Task SaveChangesAsync() => 
-            await _context.SaveChangesAsync();
     }
 }

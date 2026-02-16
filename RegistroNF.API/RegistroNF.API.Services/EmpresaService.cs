@@ -78,7 +78,7 @@ namespace RegistroNF.API.Services
                     empresaDb.Endereco = empresa.Endereco;
                     empresaDb.Status = status;
 
-                    await _empresaRepository.SaveChangesAsync();
+                    await _empresaRepository.UpdateAsync(empresaDb);
                     _logger.LogInformation(LogMessages.CADASTROATUALIZADO);
                 }
 

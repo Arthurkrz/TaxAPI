@@ -9,7 +9,5 @@ namespace RegistroNF.API.Core.Contracts.Repository
         IQueryable<T> Get();
 
         Task UpdateAsync(T entity);
-
-        Task SaveChangesAsync();
     }
 }

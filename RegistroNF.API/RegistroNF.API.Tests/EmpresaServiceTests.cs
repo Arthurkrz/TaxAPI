@@ -28,7 +28,7 @@ namespace RegistroNF.API.Tests
         }
 
         [Fact]
-        public async Task CadastroEmpresa_DeveInvocarMetodoRepositorioCadastroEmpresa_SeEmpresaNaoExisteAsync()
+        public async Task CadastroEmpresaAsync_DeveInvocarMetodoRepositorioCadastroEmpresa_SeEmpresaNaoExisteAsync()
         {
             // Arrange
             var empresa = new Empresa()
@@ -62,7 +62,7 @@ namespace RegistroNF.API.Tests
         }
 
         [Fact]
-        public async Task CadastroEmpresa_NaoDeveInvocarMetodoRepositorioCadastro_SeEmpresaExisteAsync()
+        public async Task CadastroEmpresaAsync_NaoDeveInvocarMetodoRepositorioCadastro_SeEmpresaExisteAsync()
         {
             // Arrange
             var empresa = new Empresa()
@@ -95,34 +95,9 @@ namespace RegistroNF.API.Tests
                 Times.Once);
         }
 
-        [Fact]
-        public void Test()
-        {
-            var teste = new Empresa()
-            {
-                CNPJ = "123456789",
-                NomeResponsavel = "a",
-                EmailResponsavel = "a",
-                RazaoSocial = "a",
-                NomeFantasia = "a"
-
-            };
-
-            var endereco = new Endereco()
-            {
-                Municipio = "a",
-                Logradouro = "a",
-                UF = "a",
-                Numero = 1,
-                CEP = 1
-            };
-
-            var result = RegisterStatusValidator.ValidateRegisterStatus(endereco);
-        }
-
         [Theory]
         [MemberData(nameof(GetEmpresaInvalida))]
-        public async Task CadastroEmpresa_DeveLancarExcecaoComErros_QuandoEmpresaInvalida(Empresa empresaInvalida, string erroEsperado)
+        public async Task CadastroEmpresaAsync_DeveLancarExcecaoComErros_QuandoEmpresaInvalida(Empresa empresaInvalida, string erroEsperado)
         {
             // Arrange
             _sut = new EmpresaService
@@ -136,6 +111,204 @@ namespace RegistroNF.API.Tests
             var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => 
                 _sut.CadastroEmpresaAsync(empresaInvalida));
 
+            Assert.Equal(erroEsperado, ex.Message);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(erroEsperado)),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateStatusCadastroAsync_DeveAtualizarCadastro_QuandoEmpresaCompletaAsync()
+        {
+            // Arrange
+            var empresa = new Empresa()
+            {
+                CNPJ = "12345678000173",
+                NomeResponsavel = "Nome Responsavel",
+                EmailResponsavel = "teste@teste.com",
+                RazaoSocial = "Razao Social",
+                NomeFantasia = "Nome Fantasia",
+                Endereco = new Endereco()
+                {
+                    Municipio = "Municipio",
+                    Logradouro = "Logradouro",
+                    Numero = 123,
+                    CEP = 123456789,
+                    UF = "UF",
+                }
+            };
+
+            _empresaRepositoryMock.Setup(x => x.GetByCNPJAsync(
+                It.IsAny<string>())).ReturnsAsync(empresa);
+
+            _empresaValidatorMock.Setup(x => x.Validate(empresa))
+                .Returns(new FluentValidation.Results.ValidationResult());
+
+            // Act
+            await _sut.UpdateStatusCadastroAsync(empresa);
+
+            // Assert
+            _empresaRepositoryMock.Verify(x => x.UpdateAsync(
+                It.IsAny<Empresa>()), Times.Once());
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateStatusCadastroAsync_DeveLancarExcecao_QuandoEmpresaParcialAsync()
+        {
+            // Arrange
+            var empresa = new Empresa()
+            {
+                CNPJ = default!,
+                NomeResponsavel = default!,
+                EmailResponsavel = default!,
+                RazaoSocial = default!,
+                NomeFantasia = default!,
+                Endereco = new Endereco()
+                {
+                    Municipio = default!,
+                    Logradouro = default!,
+                    Numero = default!,
+                    CEP = default!,
+                    UF = default!
+                }
+            };
+
+            _empresaRepositoryMock.Setup(x => x.GetByCNPJAsync(
+                It.IsAny<string>())).ReturnsAsync(empresa);
+
+            _empresaValidatorMock.Setup(x => x.Validate(empresa))
+                .Returns(new FluentValidation.Results.ValidationResult());
+
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => 
+                _sut.UpdateStatusCadastroAsync(empresa));
+
+            Assert.Equal(LogMessages.NOVAEMPRESAPARCIAL, ex.Message);
+
+            _empresaRepositoryMock.Verify(x => x.UpdateAsync(
+                It.IsAny<Empresa>()), Times.Never());
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Never);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateStatusCadastroAsync_DeveLancarExcecao_QuandoEmpresaOriginalNaoEncontradaAsync()
+        {
+            // Arrange
+            var empresa = new Empresa()
+            {
+                CNPJ = "12345678000173",
+                NomeResponsavel = "Nome Responsavel",
+                EmailResponsavel = "teste@teste.com",
+                RazaoSocial = "Razao Social",
+                NomeFantasia = "Nome Fantasia",
+                Endereco = new Endereco()
+                {
+                    Municipio = "Municipio",
+                    Logradouro = "Logradouro",
+                    Numero = 123,
+                    CEP = 123456789,
+                    UF = "UF",
+                }
+            };
+
+            _empresaRepositoryMock.Setup(x => x.GetByCNPJAsync(It.IsAny<string>()));
+
+            _empresaValidatorMock.Setup(x => x.Validate(empresa))
+                .Returns(new FluentValidation.Results.ValidationResult());
+
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<BusinessRuleException>(() =>
+                _sut.UpdateStatusCadastroAsync(empresa));
+
+            Assert.Equal(LogMessages.EMPRESANAOENCONTRADA, ex.Message);
+
+            _empresaRepositoryMock.Verify(x => x.UpdateAsync(
+                It.IsAny<Empresa>()), Times.Never());
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Never);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetEmpresaInvalida))]
+        public async Task UpdateStatusCadastroAsync_DeveLancarExcecaoComErros_QuandoEmpresaInvalidaAsync(Empresa empresaInvalida, string erroEsperado)
+        {
+            // Arrange
+            _sut = new EmpresaService
+            (
+                new EmpresaValidator(),
+                _empresaRepositoryMock.Object,
+                _loggerMock.Object
+            );
+
+            _empresaRepositoryMock.Setup(x => x.GetByCNPJAsync(
+                It.IsAny<string>())).ReturnsAsync(empresaInvalida);
+
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<BusinessRuleException>(() =>
+                _sut.UpdateStatusCadastroAsync(empresaInvalida));
+
+            Assert.Equal(erroEsperado, ex.Message);
+
+            _empresaRepositoryMock.Verify(x => x.UpdateAsync(
+                It.IsAny<Empresa>()), Times.Never());
+
             _loggerMock.Verify(
                 x => x.Log(
                 LogLevel.Error,
@@ -145,7 +318,14 @@ namespace RegistroNF.API.Tests
                 (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
                 Times.Once);
 
-            Assert.Equal(erroEsperado, ex.Message);
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Never);
         }
 
         public static IEnumerable<object[]> GetEmpresaInvalida()
