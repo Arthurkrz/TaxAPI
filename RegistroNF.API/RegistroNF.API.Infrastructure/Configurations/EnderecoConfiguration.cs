@@ -11,28 +11,19 @@ namespace RegistroNF.API.Infrastructure.Configurations
             builder.HasKey(end => end.Id);
 
             builder.Property(end => end.Municipio)
-                   .HasMaxLength(50)
-                   .IsRequired();
+                   .HasMaxLength(50);
 
             builder.Property(end => end.Logradouro)
-                   .HasMaxLength(100)
-                   .IsRequired();
+                   .HasMaxLength(100);
 
-            builder.Property(end => end.Numero)
-                   .IsRequired();
+            builder.Property(end => end.Numero);
 
-            builder.Property(end => end.CEP)
-                   .IsRequired();
+            builder.Property(end => end.CEP);
 
-            builder.HasOne(end => end.Empresa)
-                   .WithOne(emp => emp.Endereco)
-                   .HasForeignKey<Empresa>(emp => emp.EnderecoId)
-                   .OnDelete(DeleteBehavior.Cascade)
-                   .IsRequired();
+            builder.Property(end => end.UF);
 
             builder.Property(end => end.CreationDate)
-                   .HasColumnType("datetime2")
-                   .IsRequired();
+                   .HasColumnType("datetime2");
 
             builder.ToTable("Enderecos");
         }

@@ -4,6 +4,7 @@ using RegistroNF.API.Core.Common;
 using RegistroNF.API.Core.Contracts.Repository;
 using RegistroNF.API.Core.Contracts.Service;
 using RegistroNF.API.Core.Entities;
+using RegistroNF.API.Core.Enum;
 
 namespace RegistroNF.API.Services
 {
@@ -42,10 +43,16 @@ namespace RegistroNF.API.Services
 
             var empresa = await _empresaService.CadastroEmpresaAsync(NF.Empresa);
 
+            if (empresa.Status == Status.Bloqueado)
+            {
+                _logger.LogError(LogMessages.EMPRESABLOQUEADA);
+                throw new BusinessRuleException(LogMessages.EMPRESABLOQUEADA);
+            }
+
             NF.Empresa = empresa;
             NF.EmpresaId = empresa.Id;
 
-            _notaFiscalRepository.Create(NF);
+            await _notaFiscalRepository.CreateAsync(NF);
 
             _logger.LogInformation(LogMessages.NFCRIADA, NF.Empresa.CNPJ);
         }

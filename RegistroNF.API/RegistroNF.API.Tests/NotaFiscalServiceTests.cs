@@ -5,6 +5,7 @@ using RegistroNF.API.Core.Common;
 using RegistroNF.API.Core.Contracts.Repository;
 using RegistroNF.API.Core.Contracts.Service;
 using RegistroNF.API.Core.Entities;
+using RegistroNF.API.Core.Enum;
 using RegistroNF.API.Core.Validators;
 using RegistroNF.API.Services;
 
@@ -30,7 +31,7 @@ namespace RegistroNF.API.Tests
         }
 
         [Fact]
-        public async Task EmitirNota_DeveInvocarMetodoRepositorioCadastroNota_QuandoEmpresaJaExisteAsync()
+        public async Task EmitirNotaAsync_DeveInvocarMetodoRepositorioCadastroNota_QuandoEmpresaJaExisteAsync()
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -96,7 +97,7 @@ namespace RegistroNF.API.Tests
 
             // Assert
             _empresaServiceMock.Verify(x => x.CadastroEmpresaAsync(empresa), Times.Once);
-            _nfRepositoryMock.Verify(x => x.Create(nf), Times.Once);
+            _nfRepositoryMock.Verify(x => x.CreateAsync(nf), Times.Once);
 
             _loggerMock.Verify(
                 x => x.Log(
@@ -118,7 +119,7 @@ namespace RegistroNF.API.Tests
         }
 
         [Fact]
-        public async Task EmitirNota_DeveInvocarMetodosRepositorioCadastroNotaEmpresaAsync()
+        public async Task EmitirNotaAsync_DeveInvocarMetodosRepositorioCadastroNotaEmpresaAsync()
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -159,7 +160,7 @@ namespace RegistroNF.API.Tests
 
             // Assert
             _empresaServiceMock.Verify(x => x.CadastroEmpresaAsync(empresa), Times.Once);
-            _nfRepositoryMock.Verify(x => x.Create(nf), Times.Once);
+            _nfRepositoryMock.Verify(x => x.CreateAsync(nf), Times.Once);
 
             _loggerMock.Verify(
                 x => x.Log(
@@ -181,7 +182,7 @@ namespace RegistroNF.API.Tests
         }
 
         [Fact]
-        public async Task EmitirNota_DeveLancarExcecao_QuandoNotaDeMesmoNumeroJaExiste()
+        public async Task EmitirNotaAsync_DeveLancarExcecao_QuandoNotaDeMesmoNumeroJaExiste()
         {
             // Arrange
             var empresa = new Empresa()
@@ -239,7 +240,7 @@ namespace RegistroNF.API.Tests
 
         [Theory]
         [MemberData(nameof(GetNotaInvalidaComErro))]
-        public async Task EmitirNota_DeveLancarExcecaoComErros_QuandoNotaInvalida(NotaFiscal notaFiscal, string erroEsperado)
+        public async Task EmitirNotaAsync_DeveLancarExcecaoComErros_QuandoNotaInvalida(NotaFiscal notaFiscal, string erroEsperado)
         {
             // Arrange
             _sut = new NotaFiscalService
@@ -270,7 +271,7 @@ namespace RegistroNF.API.Tests
 
         [Theory]
         [MemberData(nameof(GetNFOrdemInvalida))]
-        public async Task EmitirNota_DeveLancarExcecao_QuandoOrdemIncorreta(List<NotaFiscal> nfsJaExistentes, NotaFiscal nfNova, string erroEsperado)
+        public async Task EmitirNotaAsync_DeveLancarExcecao_QuandoOrdemIncorreta(List<NotaFiscal> nfsJaExistentes, NotaFiscal nfNova, string erroEsperado)
         {
             // Arrange
             _nfValidatorMock.Setup(x => x.Validate(It.IsAny<NotaFiscal>()))
@@ -292,6 +293,69 @@ namespace RegistroNF.API.Tests
                 It.IsAny<Exception>(),
                 (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
                 Times.Once);
+        }
+
+        [Fact]
+        public async Task EmitirNotaAsync_DeveLancarExcecao_QuandoEmpresaBloqueadaAsync()
+        {
+            // Arrange
+            var empresaBloqueada = new Empresa()
+            {
+                CNPJ = "12345689000136",
+                NomeResponsavel = "Teste Teste",
+                EmailResponsavel = "teste@teste.com",
+                RazaoSocial = "Teste",
+                NomeFantasia = "Teste",
+                Endereco = new Endereco(),
+                Status = Status.Bloqueado,
+                NotasFiscais = new List<NotaFiscal>()
+            };
+
+            var nf = new NotaFiscal()
+            {
+                Numero = 1,
+                Serie = 1,
+                DataEmissao = DateTime.Now,
+                ValorBrutoProdutos = 10,
+                ValorICMS = 10,
+                ValorTotalNota = 11,
+                Empresa = empresaBloqueada,
+                EmpresaId = empresaBloqueada.Id
+            };
+
+            _nfValidatorMock.Setup(x => x.Validate(It.IsAny<NotaFiscal>()))
+                .Returns(new FluentValidation.Results.ValidationResult());
+
+            _nfRepositoryMock.Setup(x => x.GetSerieNFAsync(
+                It.IsAny<string>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<NotaFiscal>());
+
+            _empresaServiceMock.Setup(x => x.CadastroEmpresaAsync(
+                It.IsAny<Empresa>())).ReturnsAsync(empresaBloqueada);
+
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sut.EmitirNotaAsync(nf));
+            Assert.Equal(LogMessages.EMPRESABLOQUEADA, ex.Message);
+
+            _nfRepositoryMock.Verify(x => x.CreateAsync(nf), Times.Never);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Never);
         }
 
         public static IEnumerable<object[]> GetNFOrdemInvalida()

@@ -9,5 +9,7 @@ namespace RegistroNF.API.Core.Contracts.Repository
         Task<Empresa> GetByCNPJAsync(string cnpj);
 
         Task<IEnumerable<Empresa>> GetEmpresaByDateAsync(DateTime data);
+
+        Task<IEnumerable<Empresa>> GetEmpresasIncompletasAsync(DateTime data);
     }
 }

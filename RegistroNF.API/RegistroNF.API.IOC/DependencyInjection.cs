@@ -18,6 +18,7 @@ namespace RegistroNF.API.IOC
         {
             services.AddScoped<INotaFiscalService, NotaFiscalService>();
             services.AddScoped<IEmpresaService, EmpresaService>();
+            services.AddScoped<IEmailService, EmailService>();
             return services;
         }
 

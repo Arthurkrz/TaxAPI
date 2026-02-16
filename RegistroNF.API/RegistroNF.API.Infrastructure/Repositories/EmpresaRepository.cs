@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RegistroNF.API.Core.Contracts.Repository;
 using RegistroNF.API.Core.Entities;
+using RegistroNF.API.Core.Enum;
 
 namespace RegistroNF.API.Infrastructure.Repositories
 {
@@ -12,8 +13,8 @@ namespace RegistroNF.API.Infrastructure.Repositories
             await this.Get().AnyAsync(e => e.CNPJ == cnpj);
 
         public async Task<Empresa> GetByCNPJAsync(string cnpj) =>
-            (await this.Get().FirstOrDefaultAsync(e => e.CNPJ == cnpj))!;
-
+            (await this.Get().Include(emp => emp.Endereco).FirstOrDefaultAsync(e => e.CNPJ == cnpj))!;
+         
         public async Task<IEnumerable<Empresa>> GetEmpresaByDateAsync(DateTime data) =>
             await Get().Where(n => n.NotasFiscais
                   .Any(n => n.DataEmissao.Year == data.Year
@@ -22,5 +23,8 @@ namespace RegistroNF.API.Infrastructure.Repositories
                   .Include(x => x.NotasFiscais
                   .Where(n => n.DataEmissao.Year == data.Year
                            && n.DataEmissao.Month == data.Month)).ToListAsync();
+
+        public async Task<IEnumerable<Empresa>> GetEmpresasIncompletasAsync(DateTime data) =>
+            await Get().Where(e => e.Status == Status.Parcial).ToListAsync();
     }
 }

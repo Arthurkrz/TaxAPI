@@ -4,8 +4,10 @@ namespace RegistroNF.API.Core.Contracts.Repository
 {
     public interface IBaseRepository<T> where T : Entity
     {
-        T Create(T entity);
+        Task<T> CreateAsync(T entity);
 
         IQueryable<T> Get();
+
+        Task UpdateAsync(T entity);
     }
 }

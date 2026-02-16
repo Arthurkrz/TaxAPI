@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hangfire" Version="1.8.22" />
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.8.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -21,6 +23,7 @@
     <ProjectReference Include="..\RegistroNF.API.Infrastructure\RegistroNF.API.Infrastructure.csproj" />
     <ProjectReference Include="..\RegistroNF.API.IOC\RegistroNF.API.IOC.csproj" />
     <ProjectReference Include="..\RegistroNF.API.Core\RegistroNF.API.Core.csproj" />
+    <ProjectReference Include="..\RegistroNF.API.ScheduledJobs\RegistroNF.API.ScheduledJobs.csproj" />
   </ItemGroup>
 
 </Project>
