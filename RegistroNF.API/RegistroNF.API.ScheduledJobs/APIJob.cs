@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using RegistroNF.API.Core.Contracts.Service;
+using RegistroNF.API.Core.Contracts.SMTPService;
 
 namespace RegistroNF.API.ScheduledJobs
 {

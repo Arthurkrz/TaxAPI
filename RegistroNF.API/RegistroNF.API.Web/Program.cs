@@ -1,6 +1,7 @@
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Microsoft.EntityFrameworkCore;
+using RegistroNF.API.Core.Common;
 using RegistroNF.API.Infrastructure;
 using RegistroNF.API.IOC;
 using RegistroNF.API.ScheduledJobs;
@@ -13,13 +14,16 @@ builder.Logging.AddConsole();
 
 builder.Services.InjectRepositories(builder.Configuration)
                 .InjectServices()
-                .InjectValidators();
+                .InjectValidators()
+                .InjectSMTPServices();
 
 builder.Services.AddHangfire(config => config.UseMemoryStorage());
 builder.Services.AddHangfireServer();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<SMTPSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<Context>(options => options.UseSqlServer(connectionString));
