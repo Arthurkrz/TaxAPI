@@ -6,7 +6,7 @@
 
         public string Subject { get; set; } = String.Empty;
 
-        public string Body { get; set; } = String.Empty;
+        public string Content { get; set; } = String.Empty;
 
         public bool IsHtml { get; set; } = true;
     }

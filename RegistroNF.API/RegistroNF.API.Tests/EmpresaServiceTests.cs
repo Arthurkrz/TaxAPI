@@ -3,10 +3,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using RegistroNF.API.Core.Common;
 using RegistroNF.API.Core.Contracts.Repository;
+using RegistroNF.API.Core.Contracts.SMTPService;
 using RegistroNF.API.Core.Entities;
 using RegistroNF.API.Core.Validators;
 using RegistroNF.API.Services;
-using RegistroNF.API.Services.Utilities;
 
 namespace RegistroNF.API.Tests
 {
@@ -14,6 +14,7 @@ namespace RegistroNF.API.Tests
     {
         private readonly Mock<IValidator<Empresa>> _empresaValidatorMock = new();
         private readonly Mock<IEmpresaRepository> _empresaRepositoryMock = new();
+        private readonly Mock<IEmailService> _emailServiceMock = new();
         private readonly Mock<ILogger<EmpresaService>> _loggerMock = new();
         private EmpresaService _sut;
 
@@ -23,6 +24,7 @@ namespace RegistroNF.API.Tests
             (
                 _empresaValidatorMock.Object, 
                 _empresaRepositoryMock.Object, 
+                _emailServiceMock.Object,
                 _loggerMock.Object
             );
         }
@@ -84,6 +86,7 @@ namespace RegistroNF.API.Tests
             // Assert
             _empresaRepositoryMock.Verify(x => x.CreateAsync(empresa), Times.Never);
             _empresaRepositoryMock.Verify(x => x.GetByCNPJAsync(empresa.CNPJ), Times.Once);
+            _emailServiceMock.Verify(x => x.SendEmailAsync(It.IsAny<EmailMessage>()), Times.Never);
 
             _loggerMock.Verify(
                 x => x.Log(
@@ -104,6 +107,7 @@ namespace RegistroNF.API.Tests
             (
                 new EmpresaValidator(),
                 _empresaRepositoryMock.Object,
+                _emailServiceMock.Object,
                 _loggerMock.Object
             );
 
@@ -113,6 +117,10 @@ namespace RegistroNF.API.Tests
 
             Assert.Equal(erroEsperado, ex.Message);
 
+            _empresaRepositoryMock.Verify(x => x.CreateAsync(empresaInvalida), Times.Never);
+            _emailServiceMock.Verify(x => x.SendEmailAsync(It.IsAny<EmailMessage>()), Times.Never);
+            _empresaRepositoryMock.Verify(x => x.GetByCNPJAsync(empresaInvalida.CNPJ), Times.Never);
+
             _loggerMock.Verify(
                 x => x.Log(
                 LogLevel.Error,
@@ -121,6 +129,15 @@ namespace RegistroNF.API.Tests
                 It.IsAny<Exception>(),
                 (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
                 Times.Once);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.Never);
         }
 
         [Fact]
@@ -156,6 +173,8 @@ namespace RegistroNF.API.Tests
             // Assert
             _empresaRepositoryMock.Verify(x => x.UpdateAsync(
                 It.IsAny<Empresa>()), Times.Once());
+
+            _emailServiceMock.Verify(x => x.SendEmailAsync(It.IsAny<EmailMessage>()), Times.Once);
 
             _loggerMock.Verify(
                 x => x.Log(
@@ -212,6 +231,9 @@ namespace RegistroNF.API.Tests
             _empresaRepositoryMock.Verify(x => x.UpdateAsync(
                 It.IsAny<Empresa>()), Times.Never());
 
+            _emailServiceMock.Verify(x => x.SendEmailAsync(
+                It.IsAny<EmailMessage>()), Times.Never());
+
             _loggerMock.Verify(
                 x => x.Log(
                 LogLevel.Information,
@@ -266,6 +288,9 @@ namespace RegistroNF.API.Tests
             _empresaRepositoryMock.Verify(x => x.UpdateAsync(
                 It.IsAny<Empresa>()), Times.Never());
 
+            _emailServiceMock.Verify(x => x.SendEmailAsync(
+                It.IsAny<EmailMessage>()), Times.Never());
+
             _loggerMock.Verify(
                 x => x.Log(
                 LogLevel.Information,
@@ -294,6 +319,7 @@ namespace RegistroNF.API.Tests
             (
                 new EmpresaValidator(),
                 _empresaRepositoryMock.Object,
+                _emailServiceMock.Object,
                 _loggerMock.Object
             );
 
@@ -308,6 +334,9 @@ namespace RegistroNF.API.Tests
 
             _empresaRepositoryMock.Verify(x => x.UpdateAsync(
                 It.IsAny<Empresa>()), Times.Never());
+
+            _emailServiceMock.Verify(x => x.SendEmailAsync(
+                It.IsAny<EmailMessage>()), Times.Never());
 
             _loggerMock.Verify(
                 x => x.Log(

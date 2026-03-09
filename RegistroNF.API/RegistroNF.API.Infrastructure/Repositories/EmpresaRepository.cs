@@ -24,7 +24,7 @@ namespace RegistroNF.API.Infrastructure.Repositories
                   .Where(n => n.DataEmissao.Year == data.Year
                            && n.DataEmissao.Month == data.Month)).ToListAsync();
 
-        public async Task<IEnumerable<Empresa>> GetEmpresasIncompletasAsync(DateTime data) =>
-            await Get().Where(e => e.Status == Status.Parcial).ToListAsync();
+        public async Task<IEnumerable<Empresa>> GetEmpresasIncompletasAsync() =>
+            await Get().Where(e => e.Status == Status.Parcial || e.Status == Status.Notificado).ToListAsync();
     }
 }

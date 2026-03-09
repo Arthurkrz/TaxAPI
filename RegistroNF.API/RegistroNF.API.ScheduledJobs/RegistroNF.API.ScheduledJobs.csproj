@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RegistroNF.API.Core\RegistroNF.API.Core.csproj" />
+    <ProjectReference Include="..\RegistroNF.API.Services\RegistroNF.API.Services.csproj" />
   </ItemGroup>
 
 </Project>

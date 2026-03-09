@@ -25,8 +25,8 @@ namespace RegistroNF.API.Services
 
             var bodyBuilder = new BodyBuilder()
             {
-                HtmlBody = message.IsHtml ? message.Body : null,
-                TextBody = message.IsHtml ? null : message.Body
+                HtmlBody = message.IsHtml ? message.Content : null,
+                TextBody = message.IsHtml ? null : message.Content
             };
 
             mimeMessage.Body = bodyBuilder.ToMessageBody();

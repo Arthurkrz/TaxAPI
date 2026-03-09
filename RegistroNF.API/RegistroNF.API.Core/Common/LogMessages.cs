@@ -3,6 +3,7 @@
     public static class LogMessages
     {
         public const string ENVIONF = "{quantidadeNotas} notas enviadas de {quantidadeEmpresas} empresas na data {mes}/{ano}.";
+        public const string EMPRESASNOTIFICADASOUBLOQUEADAS = "{quantidadeEmpresas} notificadas ou bloqueadas.";
         public const string NFANTIGANUMEROMAIOR = "Já existe uma nota fiscal mais antiga cujo número é superior na série {serie}";
         public const string NFRECENTENUMEROMENOR = "Já existe uma nota fiscal mais recente cujo número é inferior na série {serie}";
         public const string NFNUMEROEXISTENTE = "Já existe uma nota fiscal com o número {numero} nesta série";

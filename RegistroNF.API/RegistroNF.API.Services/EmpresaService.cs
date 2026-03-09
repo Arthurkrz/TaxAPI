@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using RegistroNF.API.Core.Common;
 using RegistroNF.API.Core.Contracts.Repository;
 using RegistroNF.API.Core.Contracts.Service;
+using RegistroNF.API.Core.Contracts.SMTPService;
 using RegistroNF.API.Core.Entities;
 using RegistroNF.API.Core.Enum;
 using RegistroNF.API.Services.Utilities;
@@ -13,12 +14,14 @@ namespace RegistroNF.API.Services
     {
         private readonly IValidator<Empresa> _validatorEmpresa;
         private readonly IEmpresaRepository _empresaRepository;
+        private readonly IEmailService _emailService;
         private ILogger<EmpresaService> _logger;
 
-        public EmpresaService(IValidator<Empresa> validatorEmpresa, IEmpresaRepository empresaRepository, ILogger<EmpresaService> logger)
+        public EmpresaService(IValidator<Empresa> validatorEmpresa, IEmpresaRepository empresaRepository, IEmailService emailService, ILogger<EmpresaService> logger)
         {
             _validatorEmpresa = validatorEmpresa;
             _empresaRepository = empresaRepository;
+            _emailService = emailService;
             _logger = logger;
         }
 
@@ -37,11 +40,15 @@ namespace RegistroNF.API.Services
 
             if (!await _empresaRepository.EhExistenteAsync(empresa.CNPJ))
             {
-                var status = AvaliarStatus(empresa);
-                empresa.Status = status;
+                empresa.Status = AvaliarStatus(empresa);
+
+                EmailMessage email = empresa.Status == Status.Parcial ? 
+                    EmailBuilder.BuildEmailParcial(empresa) : 
+                    EmailBuilder.BuildEmailCompleto(empresa);
+
+                await _emailService.SendEmailAsync(email);
 
                 await _empresaRepository.CreateAsync(empresa);
-
                 _logger.LogInformation(LogMessages.EMPRESACRIADA, empresa.CNPJ);
             }
 
@@ -80,6 +87,9 @@ namespace RegistroNF.API.Services
 
                     await _empresaRepository.UpdateAsync(empresaDb);
                     _logger.LogInformation(LogMessages.CADASTROATUALIZADO);
+
+                    var emailCompleto = EmailBuilder.BuildEmailCompleto(empresa);
+                    await _emailService.SendEmailAsync(emailCompleto);
                 }
 
                 else
@@ -96,8 +106,8 @@ namespace RegistroNF.API.Services
             }
         }
 
-        public async Task<IEnumerable<Empresa>> GetEmpresasIncompletasAsync(int mes, int ano) =>
-            await _empresaRepository.GetEmpresasIncompletasAsync(new DateTime(ano, mes, 1));
+        public async Task<IEnumerable<Empresa>> GetEmpresasIncompletasAsync() =>
+            await _empresaRepository.GetEmpresasIncompletasAsync();
 
         public async Task<IEnumerable<Empresa>> GetEmpresaByDateAsync(int mes, int ano) =>
             await _empresaRepository.GetEmpresaByDateAsync(new DateTime(ano, mes, 1));
