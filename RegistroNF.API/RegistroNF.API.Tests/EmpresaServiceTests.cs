@@ -29,17 +29,11 @@ namespace RegistroNF.API.Tests
             );
         }
 
-        [Fact]
-        public async Task CadastroEmpresaAsync_DeveInvocarMetodoRepositorioCadastroEmpresa_SeEmpresaNaoExisteAsync()
+        [Theory]
+        [MemberData(nameof(GetEmpresaCompletaEParcial))]
+        public async Task CadastroEmpresaAsync_DeveInvocarMetodoRepositorioCadastroEmpresa_SeEmpresaNaoExisteAsync(Empresa empresa)
         {
             // Arrange
-            var empresa = new Empresa()
-            {
-                CNPJ = "12345678000199",
-                NomeResponsavel = "Nome Responsável",
-                EmailResponsavel = "emailresponsavel@gmail.com"
-            };
-
             _empresaValidatorMock.Setup(x => x.Validate(empresa))
                 .Returns(new FluentValidation.Results.ValidationResult());
 
@@ -492,6 +486,51 @@ namespace RegistroNF.API.Tests
                     LogMessages.NOMERESPONSAVELINVALIDO,
                     LogMessages.EMAILRESPONSAVELINVALIDO
                 })
+            };
+        }
+
+        public static IEnumerable<object[]> GetEmpresaCompletaEParcial()
+        {
+            yield return new object[]
+            {
+                new Empresa()
+                {
+                    CNPJ = "12345678000199",
+                    NomeResponsavel = "Nome Responsável",
+                    EmailResponsavel = "emailresponsavel@gmail.com",
+                    RazaoSocial = "Razão Social",
+                    NomeFantasia = "Nome Fantasia",
+                    Endereco = new Endereco()
+                    {
+                        Municipio = "Município",
+                        Logradouro = "Logradouro",
+                        Numero = 123,
+                        CEP = 123456789,
+                        UF = "UF"
+                    } 
+                }
+            };
+
+            yield return new object[]
+            {
+                new Empresa()
+                {
+                    CNPJ = "12345678000199",
+                    NomeResponsavel = "Nome Responsável",
+                    EmailResponsavel = "emailresponsavel@gmail.com",
+                    RazaoSocial = "Razão Social",
+                    NomeFantasia = "Nome Fantasia"
+                }
+            };
+
+            yield return new object[]
+            {
+                new Empresa()
+                {
+                    CNPJ = "12345678000199",
+                    NomeResponsavel = "Nome Responsável",
+                    EmailResponsavel = "emailresponsavel@gmail.com",
+                }
             };
         }
     }

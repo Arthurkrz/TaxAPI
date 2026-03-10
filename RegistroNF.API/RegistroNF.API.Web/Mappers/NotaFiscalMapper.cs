@@ -27,6 +27,7 @@ namespace RegistroNF.API.Web.Mappers
                         Logradouro = nfDTO.Logradouro,
                         Numero = nfDTO.NumeroEndereco,
                         CEP = nfDTO.CEP,
+                        UF = nfDTO.UF
                     }
                 }
             };
