@@ -34,7 +34,7 @@ namespace CalculadoraImposto.API.ScheduledJobs
             _logger.LogInformation(LogMessages.REQUISICAOEMPRESAS, 
                 dataReferencia.Month, dataReferencia.Year);
 
-            var response = await _httpClient.GetAsync($"https://localhost:7075/api/v1/NotaFiscal?mes={dataReferencia.Month}&ano={dataReferencia.Year}");
+            var response = await _httpClient.GetAsync($"https://localhost:7075/api/v1/Empresa?mes={dataReferencia.Month}&ano={dataReferencia.Year}");
             var json = await response.Content.ReadAsStringAsync();
 
             var empresasDTO = JsonSerializer.Deserialize<List<EmpresaDTO>>(json, options);

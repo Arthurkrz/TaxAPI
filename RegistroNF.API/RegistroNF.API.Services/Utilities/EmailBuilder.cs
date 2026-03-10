@@ -43,7 +43,7 @@ namespace RegistroNF.API.Services.Utilities
             var cnpj = Regex.Replace(empresa.CNPJ, 
                 @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
 
-            var now = DateTime.Now;
+            var now = SystemTime.Now();
 
             var header = EmailTemplate.HEADER.Replace("{NAME}", empresa.NomeResponsavel);
             body = body.Replace("{CNPJ}", cnpj);

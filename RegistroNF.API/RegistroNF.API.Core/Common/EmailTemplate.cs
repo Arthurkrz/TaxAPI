@@ -76,7 +76,7 @@
                     <div>
                         <p>
 						    Gostaríamos de informar que seu cadastro foi realizado
-                            com êxito e sua empresa de<strong>CNPJ {CNPJ}</strong> já consta em
+                            com êxito e sua empresa de <strong>CNPJ {CNPJ}</strong> já consta em
                             nosso sistema!
                         </p>                                    
                         <p style='font-weight:bold'>
