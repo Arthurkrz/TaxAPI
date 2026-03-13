@@ -17,11 +17,21 @@ namespace RegistroNF.API.Services.Utilities
                     prop.PropertyType == typeof(Status))
                         continue;
 
-                if (prop.GetValue(entity) == default) 
+                if (prop.GetValue(entity) == default)
                     return Status.Parcial;
+
+                if (prop.PropertyType == typeof(string) &&
+                    !IsValidString((prop.GetValue(entity) as string)!))
+                        return Status.Parcial;
+
+                else continue;
             }
 
             return Status.Completo;
         }
+
+        private static bool IsValidString(string value) =>
+            !string.IsNullOrWhiteSpace(value) &&
+            !string.Equals(value, "string", StringComparison.OrdinalIgnoreCase);
     }
 }
