@@ -39,16 +39,17 @@
 
 
         public const string HEADER = 
-            @"<tr>
-                <td align='center' style='background-color:#2c3e50; color:white;'>
-                    <div><h1>Olá, {NAME}!</h1></div>
-                </td>
-            </tr>";
+            @"<img src=""cid:logo-id"" />";
 
         public const string EMPRESANOVAPARCIALBODY =
             @"<tr>
                 <td style='color:#333333; font-size:18px; line-height:1.5; text-align:justify;'>
                     <div>
+                        <tr>
+                            <td align='center' style='background-color:#2c3e50; color:white;'>
+                                <div><h1>Olá, {NAME}!</h1></div>
+                            </td>
+                        </tr>
                         <p>
                             Gostaríamos de informar que seu cadastro foi realizado 
                             com êxito e sua empresa de <strong>CNPJ {CNPJ}</strong> 

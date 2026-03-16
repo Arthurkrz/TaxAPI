@@ -23,11 +23,17 @@ namespace RegistroNF.API.Services
             mimeMessage.To.AddRange(message.To.Select(e => MailboxAddress.Parse(e)));
             mimeMessage.Subject = message.Subject;
 
-            var bodyBuilder = new BodyBuilder()
-            {
-                HtmlBody = message.IsHtml ? message.Content : null,
-                TextBody = message.IsHtml ? null : message.Content
-            };
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "images", "logo.png");
+            byte[] imgBytes = File.ReadAllBytes(path);
+
+            var bodyBuilder = new BodyBuilder();
+
+            var image = bodyBuilder.LinkedResources.Add("logo.png", imgBytes);
+            image.ContentId = "logo-id";
+
+
+            bodyBuilder.HtmlBody = message.IsHtml ? message.Content : null;
+            bodyBuilder.TextBody = message.IsHtml ? null : message.Content;
 
             mimeMessage.Body = bodyBuilder.ToMessageBody();
 
