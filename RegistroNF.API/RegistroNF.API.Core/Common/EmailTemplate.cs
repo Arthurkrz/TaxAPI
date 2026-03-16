@@ -39,17 +39,15 @@
 
 
         public const string HEADER = 
-            @"<img src=""cid:logo-id"" />";
+            @"<img src=""cid:logo-id""/>";
 
         public const string EMPRESANOVAPARCIALBODY =
             @"<tr>
                 <td style='color:#333333; font-size:18px; line-height:1.5; text-align:justify;'>
                     <div>
-                        <tr>
-                            <td align='center' style='background-color:#2c3e50; color:white;'>
-                                <div><h1>Olá, {NAME}!</h1></div>
-                            </td>
-                        </tr>
+                        <p align='center' style='font-size:22px; font-weight:bold'>
+                            Olá, {NAME}!
+                        </p>
                         <p>
                             Gostaríamos de informar que seu cadastro foi realizado 
                             com êxito e sua empresa de <strong>CNPJ {CNPJ}</strong> 
@@ -75,6 +73,9 @@
             @"<tr>
                 <td style='color:#333333; font-size:18px; line-height:1.5; text-align:justify;'>
                     <div>
+                        <p align='center' style='font-size:22px; font-weight:bold'>
+                            Olá, {NAME}!
+                        </p>
                         <p>
 						    Gostaríamos de informar que seu cadastro foi realizado
                             com êxito e sua empresa de <strong>CNPJ {CNPJ}</strong> já consta em
@@ -94,6 +95,9 @@
             @"<tr>
                 <td style='color:#333333; font-size:18px; line-height:1.5; text-align:justify;'>
                     <div>
+                        <p align='center' style='font-size:22px; font-weight:bold'>
+                            Olá, {NAME}!
+                        </p>
                         <p>
 							Gostaríamos de informar que a atualização dos dados da empresa de
                             <strong>CNPJ {CNPJ}</strong> foi realizada com êxito! 
@@ -114,6 +118,9 @@
             @"<tr>
                 <td style='color:#333333; font-size:18px; line-height:1.5; text-align:justify;'>
                     <div>
+                        <p align='center' style='font-size:22px; font-weight:bold'>
+                            Olá, {NAME}!
+                        </p>
                         <p>
 							Gostaríamos de informar que a atualização dos dados 
                             da empresa de <strong>CNPJ {CNPJ}</strong> ainda não foi realizada!
@@ -134,6 +141,9 @@
             @"<tr>
                 <td style='color:#333333; font-size:18px; line-height:1.5; text-align:justify;'>
                     <div>
+                        <p align='center' style='font-size:22px; font-weight:bold'>
+                            Olá, {NAME}!
+                        </p>
                         <p>
 							Gostaríamos de informar que sua empresa de <strong>CNPJ {CNPJ}
                             </strong> foi bloqueada pela pendência de dados cadastrais!
@@ -151,15 +161,15 @@
             </tr>";
 
         public const string FOOTER =
-            @"<tr>
+            @"<tr bgcolor=""#20293e"">
                 <td align='left'>
                     <table cellpadding='0' cellspacing='0'>
                         <tr>
                             <td>
-                                <img src='https://seusite.com/logo-taxapi.png' 
-                                        width='24' height='24' style='display:block;'>
+                                <img src=""cid:logomarca-id"" 
+                                width='24' height='24' style='display:block;'/>
                             </td>
-                            <td style='padding-left:8px; font-size:12px;'>
+                            <td style='padding-left:8px; font-size:12px; color:#FFFFFF'>
                                 © {YEAR} TaxAPI. All rights reserved.
                             </td>
                         </tr>
@@ -167,9 +177,9 @@
                 </td>
             </tr>
 
-            <tr>
+            <tr bgcolor=""#20293e"">
                 <td align='right' style='font-size:10px; 
-                    font-style:italic; padding-top:6px;'>
+                    font-style:italic; padding-top:6px; color:#FFFFFF'>
                     {dd/MM/yyyy} {HH:mm:ss}
                 </td>
             </tr>";
