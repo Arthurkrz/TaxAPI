@@ -45,8 +45,7 @@ namespace RegistroNF.API.Services.Utilities
 
             var now = SystemTime.Now();
 
-            var header = EmailTemplate.HEADER.Replace("{NAME}", empresa.NomeResponsavel);
-            body = body.Replace("{CNPJ}", cnpj);
+            body = body.Replace("{CNPJ}", cnpj).Replace("{NAME}", empresa.NomeResponsavel);
 
             var footer = EmailTemplate.FOOTER
                 .Replace("{YEAR}", now.Year.ToString())
@@ -55,7 +54,7 @@ namespace RegistroNF.API.Services.Utilities
 
             var content = EmailTemplate.BACKBONE
                 .Replace("{BODY}", body)
-                .Replace("{HEADER}", header)
+                .Replace("{HEADER}", EmailTemplate.HEADER)
                 .Replace("{FOOTER}", footer);
 
             return content;

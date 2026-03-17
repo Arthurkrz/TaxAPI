@@ -161,7 +161,7 @@
             </tr>";
 
         public const string FOOTER =
-            @"<tr bgcolor=""#20293e"">
+            @"<tr>
                 <td align='left'>
                     <table cellpadding='0' cellspacing='0'>
                         <tr>
@@ -177,7 +177,7 @@
                 </td>
             </tr>
 
-            <tr bgcolor=""#20293e"">
+            <tr>
                 <td align='right' style='font-size:10px; 
                     font-style:italic; padding-top:6px; color:#FFFFFF'>
                     {dd/MM/yyyy} {HH:mm:ss}
