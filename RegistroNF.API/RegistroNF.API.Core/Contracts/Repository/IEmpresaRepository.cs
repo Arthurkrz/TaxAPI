@@ -10,6 +10,6 @@ namespace RegistroNF.API.Core.Contracts.Repository
 
         Task<IEnumerable<Empresa>> GetEmpresaByDateAsync(DateTime data);
 
-        Task<IEnumerable<Empresa>> GetEmpresasIncompletasAsync(DateTime data);
+        Task<IEnumerable<Empresa>> GetEmpresasIncompletasAsync();
     }
 }

@@ -90,7 +90,7 @@ namespace RegistroNF.API.Tests
 
             _nfRepositoryMock.Setup(x => x.GetSerieNFAsync(
                 It.IsAny<string>(), It.IsAny<int>()))
-                .ReturnsAsync(new List<NotaFiscal>());
+                .ReturnsAsync(notasFiscais);
 
             // Act
             await _sut.EmitirNotaAsync(nf);

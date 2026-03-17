@@ -9,6 +9,7 @@ using RegistroNF.API.Core.Contracts.Service;
 using RegistroNF.API.Core.Entities;
 using RegistroNF.API.Core.Validators;
 using RegistroNF.API.Services;
+using RegistroNF.API.Core.Contracts.SMTPService;
 
 namespace RegistroNF.API.IOC
 {
@@ -18,7 +19,6 @@ namespace RegistroNF.API.IOC
         {
             services.AddScoped<INotaFiscalService, NotaFiscalService>();
             services.AddScoped<IEmpresaService, EmpresaService>();
-            services.AddScoped<IEmailService, EmailService>();
             return services;
         }
 
@@ -36,6 +36,12 @@ namespace RegistroNF.API.IOC
         {
             services.AddScoped<IValidator<Empresa>, EmpresaValidator>();
             services.AddScoped<IValidator<NotaFiscal>, NotaFiscalValidator>();
+            return services;
+        }
+
+        public static IServiceCollection InjectSMTPServices(this IServiceCollection services)
+        {
+            services.AddScoped<IEmailService, EmailService>();
             return services;
         }
     }
